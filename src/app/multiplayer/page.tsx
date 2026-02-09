@@ -9,13 +9,13 @@ function MultiplayerContent() {
   const searchParams = useSearchParams();
 
   // Get parameters from URL
-  const mode = searchParams.get('mode') || 'versus';
+  const gameMode = searchParams.get('mode') || 'versus';
   const actor1Id = parseInt(searchParams.get('actor1') || '0');
   const actor2Id = parseInt(searchParams.get('actor2') || '0');
   const movieCount = parseInt(searchParams.get('count') || '16');
   const actor1Name = searchParams.get('name1') || 'Actor 1';
   const actor2Name = searchParams.get('name2') || 'Actor 2';
-  const [mode, setMode] = useState<'menu' | 'create' | 'join'>('menu');
+  const [view, setView] = useState<'menu' | 'create' | 'join'>('menu');
   const [hostName, setHostName] = useState('');
   const [joinCode, setJoinCode] = useState('');
   const [joinName, setJoinName] = useState('');
@@ -28,8 +28,8 @@ function MultiplayerContent() {
       return;
     }
 
-    if (!actor1Id || (mode === 'versus' && !actor2Id)) {
-      setError(`Please select ${mode === 'single' ? 'an actor' : 'two actors'} first`);
+    if (!actor1Id || (gameMode === 'versus' && !actor2Id)) {
+      setError(`Please select ${gameMode === 'single' ? 'an actor' : 'two actors'} first`);
       return;
     }
 
@@ -42,9 +42,9 @@ function MultiplayerContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           actor1_id: actor1Id,
-          actor2_id: mode === 'single' ? actor1Id : actor2Id,  // Use same actor for single mode
+          actor2_id: gameMode === 'single' ? actor1Id : actor2Id,  // Use same actor for single mode
           actor1_name: actor1Name,
-          actor2_name: mode === 'single' ? actor1Name : actor2Name,
+          actor2_name: gameMode === 'single' ? actor1Name : actor2Name,
           movie_count: movieCount,
           host_name: hostName,
         }),
@@ -112,7 +112,7 @@ function MultiplayerContent() {
 
         {/* Back button */}
         <button
-          onClick={() => mode === 'menu' ? router.push('/') : setMode('menu')}
+          onClick={() => view === 'menu' ? router.push('/') : setView('menu')}
           className="flex items-center gap-2 text-foreground/70 mb-6"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,10 +135,10 @@ function MultiplayerContent() {
           </div>
         )}
 
-        {mode === 'menu' && (
+        {view === 'menu' && (
           <div className="space-y-4">
             <button
-              onClick={() => setMode('create')}
+              onClick={() => setView('create')}
               style={{ paddingLeft: '2rem', paddingRight: '2rem', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}
               className="w-full bg-primary text-white rounded-2xl font-fredoka font-bold text-lg transition-all hover:shadow-lg"
             >
@@ -146,7 +146,7 @@ function MultiplayerContent() {
             </button>
 
             <button
-              onClick={() => setMode('join')}
+              onClick={() => setView('join')}
               style={{ paddingLeft: '2rem', paddingRight: '2rem', paddingTop: '1.5rem', paddingBottom: '1.5rem' }}
               className="w-full bg-white text-primary border-2 border-primary rounded-2xl font-fredoka font-bold text-lg transition-all hover:shadow-lg"
             >
@@ -155,7 +155,7 @@ function MultiplayerContent() {
           </div>
         )}
 
-        {mode === 'create' && (
+        {view === 'create' && (
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-nunito font-medium text-foreground/70 mb-2">
@@ -174,31 +174,31 @@ function MultiplayerContent() {
 
             <div className="bg-surface-variant rounded-xl p-4">
               <p className="text-sm font-nunito text-foreground/70 mb-2">
-                {mode === 'single' ? 'Selected Actor:' : 'Selected Matchup:'}
+                {gameMode === 'single' ? 'Selected Actor:' : 'Selected Matchup:'}
               </p>
               <p className="font-nunito font-bold text-foreground">
-                {mode === 'single' ? (
+                {gameMode === 'single' ? (
                   actor1Name
                 ) : (
                   <>{actor1Name} <span className="text-primary">VS</span> {actor2Name}</>
                 )}
               </p>
               <p className="text-xs font-nunito text-foreground/60 mt-1">
-                {movieCount} movies {mode === 'versus' ? 'each' : 'total'}
+                {movieCount} movies {gameMode === 'versus' ? 'each' : 'total'}
               </p>
-              {(!actor1Id || (mode === 'versus' && !actor2Id)) && (
+              {(!actor1Id || (gameMode === 'versus' && !actor2Id)) && (
                 <p className="text-xs font-nunito text-secondary mt-2">
-                  ⚠️ Please select {mode === 'single' ? 'an actor' : 'two actors'} first
+                  ⚠️ Please select {gameMode === 'single' ? 'an actor' : 'two actors'} first
                 </p>
               )}
             </div>
 
             <button
               onClick={handleCreateLobby}
-              disabled={isLoading || !hostName.trim() || !actor1Id || (mode === 'versus' && !actor2Id)}
+              disabled={isLoading || !hostName.trim() || !actor1Id || (gameMode === 'versus' && !actor2Id)}
               style={{ paddingLeft: '2rem', paddingRight: '2rem', paddingTop: '1.25rem', paddingBottom: '1.25rem' }}
               className={`w-full rounded-2xl font-fredoka font-bold text-base transition-all ${
-                isLoading || !hostName.trim() || !actor1Id || (mode === 'versus' && !actor2Id)
+                isLoading || !hostName.trim() || !actor1Id || (gameMode === 'versus' && !actor2Id)
                   ? 'bg-foreground/10 text-foreground/30 cursor-not-allowed'
                   : 'bg-primary text-white hover:shadow-lg'
               }`}
@@ -208,7 +208,7 @@ function MultiplayerContent() {
           </div>
         )}
 
-        {mode === 'join' && (
+        {view === 'join' && (
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-nunito font-medium text-foreground/70 mb-2">
