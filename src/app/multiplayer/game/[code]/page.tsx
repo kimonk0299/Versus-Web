@@ -316,6 +316,9 @@ export default function MultiplayerGamePage({
     );
   }
 
+  // Determine if this is single actor knockout mode
+  const isSingleActorMode = lobby.actor1_id === lobby.actor2_id;
+
   // Calculate the matchup index
   // For single actor knockout: use round_start_matchup to get position within current round
   // For versus mode: use current_matchup directly (1-indexed)
@@ -335,8 +338,6 @@ export default function MultiplayerGamePage({
     console.error('isSingleActorMode:', isSingleActorMode);
     return <LoadingSpinner />;
   }
-
-  const isSingleActorMode = lobby.actor1_id === lobby.actor2_id;
   const voteProgress = votes.length;
   const totalPlayers = participants.length;
   const progressPercent = (voteProgress / totalPlayers) * 100;

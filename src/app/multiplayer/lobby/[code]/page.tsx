@@ -107,7 +107,7 @@ export default function LobbyWaitingRoom({
           console.log('Payload:', payload);
 
           // Check if this participant belongs to our lobby
-          const eventLobbyId = payload.new?.lobby_id || payload.old?.lobby_id;
+          const eventLobbyId = (payload.new as any)?.lobby_id || (payload.old as any)?.lobby_id;
           console.log('Event lobby ID:', eventLobbyId);
           console.log('Our lobby ID:', lobby.id);
 
@@ -167,7 +167,7 @@ export default function LobbyWaitingRoom({
           console.log('Payload:', payload);
 
           // Check if this is our lobby
-          const eventLobbyId = payload.new?.id || payload.old?.id;
+          const eventLobbyId = (payload.new as any)?.id || (payload.old as any)?.id;
           console.log('Event lobby ID:', eventLobbyId);
           console.log('Our lobby ID:', lobby.id);
 
