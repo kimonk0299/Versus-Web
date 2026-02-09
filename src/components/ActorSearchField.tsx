@@ -25,7 +25,7 @@ export default function ActorSearchField({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full px-6 py-4 bg-white border-2 border-foreground/20 rounded-xl focus:border-primary focus:outline-none transition-colors font-nunito text-base text-foreground placeholder:text-foreground/40"
+        className="w-full px-8 py-5 bg-white border-2 border-foreground/20 rounded-xl focus:border-primary focus:outline-none transition-colors font-nunito text-base text-foreground placeholder:text-foreground/40"
       />
     </div>
   );

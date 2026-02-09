@@ -2,10 +2,8 @@ import { Movie } from '../tmdb/types';
 import { Matchup } from './types';
 
 /**
- * Pad the movie list to the nearest power of 2 (4, 8, 16).
+ * Pad the movie list to the nearest power of 2 (4, 8, 16, 32).
  * The bracket works best with any power of 2.
- *
- * CRITICAL: This matches Android's padding logic (from BracketViewModel.kt:264)
  *
  * @param movies List of movies to pad
  * @returns Padded list (or truncated to nearest power of 2)
@@ -13,6 +11,7 @@ import { Matchup } from './types';
 export function padToPowerOfTwo(movies: Movie[]): Movie[] {
   // Find the appropriate bracket size based on how many movies we have
   const targetSize =
+    movies.length >= 32 ? 32 :
     movies.length >= 16 ? 16 :
     movies.length >= 8 ? 8 :
     movies.length >= 4 ? 4 :
@@ -60,6 +59,8 @@ export function getRoundName(matchupCount: number): string {
       return 'Quarterfinals';
     case 8:
       return 'Round of 16';
+    case 16:
+      return 'Round of 32';
     default:
       return `Round of ${matchupCount * 2}`;
   }
