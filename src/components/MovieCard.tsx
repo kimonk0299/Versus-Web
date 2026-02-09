@@ -35,12 +35,12 @@ export default function MovieCard({ movie, onClick, isSelected }: MovieCardProps
         />
 
         {/* Gradient overlay */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent p-4">
-          <h3 className="text-white font-fredoka font-bold text-lg line-clamp-2 leading-tight">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/70 to-transparent pt-12 pb-3 px-2">
+          <h3 className="text-white font-fredoka font-bold text-base text-center line-clamp-2 leading-tight">
             {movie.title}
           </h3>
           {movie.releaseYear > 0 && (
-            <p className="text-white/90 text-sm mt-1">{movie.releaseYear}</p>
+            <p className="text-white/70 text-xs text-center mt-0.5">{movie.releaseYear}</p>
           )}
         </div>
 
