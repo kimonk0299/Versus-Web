@@ -50,54 +50,65 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden">
+    <div className="h-screen flex flex-col justify-center p-6 bg-background overflow-hidden">
       <div className="w-full max-w-md mx-auto">
+        {/* Film Icon */}
+        <div className="text-center mb-4">
+          <div className="inline-block text-6xl">🎬</div>
+        </div>
+
         {/* Title */}
-        <div className="text-center mb-6">
-          <h1 className="text-5xl font-fredoka font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+        <div className="text-center mb-8">
+          <h1 className="text-6xl font-fredoka font-bold text-primary mb-2">
             VERSUS
           </h1>
-          <p className="text-sm text-foreground/70 font-nunito">
-            Pick your champion!
+          <p className="text-base text-foreground/60 font-nunito">
+            Movie Tournament
           </p>
         </div>
 
         {/* Mode Selection */}
-        <div className="bg-white rounded-2xl p-4 shadow-xl mb-4">
-          <h2 className="text-lg font-fredoka font-semibold text-foreground mb-3 text-center">
+        <div className="mb-8">
+          <h2 className="text-xl font-fredoka font-semibold text-foreground mb-4 text-center">
             Choose Mode
           </h2>
 
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-2 gap-4 mb-8">
             <button
               onClick={() => setMode('single')}
-              className={`py-3 px-4 rounded-xl font-nunito font-bold text-sm transition-all ${
+              className={`py-4 px-4 rounded-2xl font-nunito font-semibold text-base transition-all border-2 flex items-center justify-center gap-2 ${
                 mode === 'single'
-                  ? 'bg-primary text-white shadow-lg'
-                  : 'bg-surface-variant text-foreground/70'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-foreground/70 border-foreground/20'
               }`}
             >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
               Single Actor
             </button>
             <button
               onClick={() => setMode('versus')}
-              className={`py-3 px-4 rounded-xl font-nunito font-bold text-sm transition-all ${
+              className={`py-4 px-4 rounded-2xl font-nunito font-semibold text-base transition-all border-2 flex items-center justify-center gap-2 ${
                 mode === 'versus'
-                  ? 'bg-secondary text-white shadow-lg'
-                  : 'bg-surface-variant text-foreground/70'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-foreground/70 border-foreground/20'
               }`}
             >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+              </svg>
               Actor vs Actor
             </button>
           </div>
 
           {/* Actor 1 Search */}
-          <div className="relative mb-4">
+          <div className="relative mb-6">
             <ActorSearchField
               value={actor1Query}
               onChange={setActor1Query}
-              label={mode === 'single' ? 'Actor Name' : 'Actor 1'}
-              placeholder="Type actor name..."
+              label=""
+              placeholder={mode === 'single' ? 'Actor Name' : 'Actor 1'}
             />
             <SuggestionsList
               suggestions={actor1Suggestions}
@@ -105,14 +116,21 @@ export default function Home() {
             />
           </div>
 
+          {/* VS Text (Versus mode only) */}
+          {mode === 'versus' && (
+            <div className="text-center my-4">
+              <span className="text-3xl font-fredoka font-bold text-primary">VS</span>
+            </div>
+          )}
+
           {/* Actor 2 Search (Versus mode only) */}
           {mode === 'versus' && (
-            <div className="relative mb-4">
+            <div className="relative mb-6">
               <ActorSearchField
                 value={actor2Query}
                 onChange={setActor2Query}
-                label="Actor 2"
-                placeholder="Type actor name..."
+                label=""
+                placeholder="Actor 2"
               />
               <SuggestionsList
                 suggestions={actor2Suggestions}
@@ -125,10 +143,10 @@ export default function Home() {
           <button
             onClick={handleStartTournament}
             disabled={!canStartTournament()}
-            className={`w-full py-3 rounded-xl font-fredoka font-bold text-lg transition-all ${
+            className={`w-full py-4 rounded-2xl font-fredoka font-bold text-lg transition-all ${
               canStartTournament()
-                ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
-                : 'bg-foreground/10 text-foreground/40 cursor-not-allowed'
+                ? 'bg-foreground/10 text-foreground/50 hover:bg-foreground/15'
+                : 'bg-foreground/5 text-foreground/30 cursor-not-allowed'
             }`}
           >
             START TOURNAMENT
@@ -136,8 +154,12 @@ export default function Home() {
         </div>
 
         {/* Instructions */}
-        <div className="text-center text-foreground/60 text-xs px-4">
-          <p>Start typing to see actor suggestions</p>
+        <div className="text-center text-foreground/50 text-sm px-4">
+          <p>
+            {mode === 'single'
+              ? 'Pick an actor and their top 16 movies battle it out in a tournament bracket!'
+              : 'Pick two actors and their top movies go head to head — the actor with more wins takes it!'}
+          </p>
         </div>
       </div>
     </div>

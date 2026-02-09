@@ -85,79 +85,56 @@ export default function VersusBracketPage({
       100) || 0;
 
   return (
-    <div className="h-screen flex flex-col p-3 bg-gradient-to-br from-surface-variant via-background to-background overflow-hidden">
+    <div className="h-screen flex flex-col p-4 bg-background overflow-hidden">
       {/* Header with Score - Compact */}
-      <div className="text-center mb-3">
+      <div className="mb-3">
         <motion.h1
-          className="text-xl font-fredoka font-bold text-primary mb-2"
+          className="text-xl font-fredoka font-bold text-foreground mb-3 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {versusBracketState.actor1Name} vs {versusBracketState.actor2Name}
+          Head to Head
         </motion.h1>
 
         {/* Score Bar */}
         <div className="mb-2">
-          <div className="flex justify-between text-xs font-nunito font-semibold text-foreground/70 mb-1 px-2">
-            <span className="truncate">{versusBracketState.actor1Name}</span>
-            <span className="text-[10px]">
-              {versusBracketState.currentMatchup + 1}/{totalMatchups}
-            </span>
-            <span className="truncate">{versusBracketState.actor2Name}</span>
+          <div className="flex justify-between items-center mb-2 px-2">
+            <div className="flex flex-col items-center">
+              <span className="text-xs font-nunito text-foreground/70 truncate max-w-[120px]">{versusBracketState.actor1Name}</span>
+              <span className="text-2xl font-fredoka font-bold text-primary">{versusBracketState.actor1Wins}</span>
+            </div>
+            <span className="text-lg font-fredoka font-bold text-foreground/50">VS</span>
+            <div className="flex flex-col items-center">
+              <span className="text-xs font-nunito text-foreground/70 truncate max-w-[120px]">{versusBracketState.actor2Name}</span>
+              <span className="text-2xl font-fredoka font-bold text-primary">{versusBracketState.actor2Wins}</span>
+            </div>
           </div>
-
-          <div className="flex h-8 rounded-xl overflow-hidden shadow-md">
-            <motion.div
-              className="bg-primary flex items-center justify-center text-white font-nunito font-bold text-sm"
-              initial={{ width: '50%' }}
-              animate={{
-                width:
-                  versusBracketState.currentMatchup === 0
-                    ? '50%'
-                    : `${actor1WinPercent}%`,
-              }}
-              transition={{ duration: 0.5 }}
-            >
-              {versusBracketState.actor1Wins}
-            </motion.div>
-            <motion.div
-              className="bg-secondary flex items-center justify-center text-white font-nunito font-bold text-sm"
-              initial={{ width: '50%' }}
-              animate={{
-                width:
-                  versusBracketState.currentMatchup === 0
-                    ? '50%'
-                    : `${actor2WinPercent}%`,
-              }}
-              transition={{ duration: 0.5 }}
-            >
-              {versusBracketState.actor2Wins}
-            </motion.div>
-          </div>
+          <p className="text-center text-xs text-foreground/60 font-nunito">
+            Match {versusBracketState.currentMatchup + 1} of {totalMatchups}
+          </p>
         </div>
       </div>
 
-      {/* Matchup - Fits on screen */}
-      <div className="flex-1 flex flex-col justify-center gap-2 max-w-md mx-auto w-full">
+      <div className="text-center mb-3">
+        <p className="font-nunito text-base text-foreground/70 font-medium">Tap your pick!</p>
+      </div>
+
+      {/* Matchup - Maintains 2:3 aspect ratio */}
+      <div className="flex-1 flex flex-col justify-center gap-3 px-6 max-w-sm mx-auto w-full min-h-0">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex-1"
+          className="w-full"
         >
-          <div className="mb-1 text-center">
-            <span className="inline-block px-3 py-1 bg-primary/20 text-primary font-nunito font-semibold rounded-lg text-xs">
-              {versusBracketState.actor1Name}
-            </span>
-          </div>
           <MovieCard
             movie={currentMatchup.movie1}
             onClick={() => pickWinner(currentMatchup.movie1)}
           />
         </motion.div>
 
-        <div className="flex items-center justify-center py-1">
-          <div className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-1 rounded-full text-xl font-fredoka font-bold shadow-lg">
+        <div className="flex items-center justify-center py-2">
+          <div className="bg-primary text-white px-8 py-2 rounded-full text-2xl font-fredoka font-bold shadow-lg">
             VS
           </div>
         </div>
@@ -166,23 +143,13 @@ export default function VersusBracketPage({
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex-1"
+          className="w-full"
         >
-          <div className="mb-1 text-center">
-            <span className="inline-block px-3 py-1 bg-secondary/20 text-secondary font-nunito font-semibold rounded-lg text-xs">
-              {versusBracketState.actor2Name}
-            </span>
-          </div>
           <MovieCard
             movie={currentMatchup.movie2}
             onClick={() => pickWinner(currentMatchup.movie2)}
           />
         </motion.div>
-      </div>
-
-      {/* Instructions - Compact */}
-      <div className="text-center py-2 text-foreground/60">
-        <p className="font-nunito text-xs">Tap your favorite movie!</p>
       </div>
     </div>
   );

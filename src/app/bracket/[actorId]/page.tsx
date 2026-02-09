@@ -71,38 +71,32 @@ export default function BracketPage({
   const progress = ((bracketState.currentMatchup + 1) / totalMatchups) * 100;
 
   return (
-    <div className="h-screen flex flex-col p-3 bg-gradient-to-br from-surface-variant via-background to-background overflow-hidden">
+    <div className="h-screen flex flex-col p-4 bg-background overflow-hidden">
       {/* Header - Compact */}
-      <div className="text-center mb-3">
+      <div className="text-center mb-4">
         <motion.h1
-          className="text-2xl font-fredoka font-bold text-primary mb-1"
+          className="text-3xl font-fredoka font-bold text-primary mb-1"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           {roundName}
         </motion.h1>
-        <p className="text-sm text-foreground/70 font-nunito mb-2">
+        <p className="text-sm text-foreground/60 font-nunito">
           Match {bracketState.currentMatchup + 1} of {totalMatchups}
         </p>
-
-        {/* Progress Bar */}
-        <div className="max-w-md mx-auto bg-surface-variant rounded-full h-2 overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-primary to-secondary"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
       </div>
 
-      {/* Matchup - Fits on screen */}
-      <div className="flex-1 flex flex-col justify-center gap-2 max-w-md mx-auto w-full">
+      <div className="text-center mb-4">
+        <p className="font-nunito text-base text-foreground/70 font-medium">Tap your pick!</p>
+      </div>
+
+      {/* Matchup - Maintains 2:3 aspect ratio */}
+      <div className="flex-1 flex flex-col justify-center gap-3 px-6 max-w-sm mx-auto w-full min-h-0">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex-1"
+          className="w-full"
         >
           <MovieCard
             movie={currentMatchup.movie1}
@@ -110,8 +104,8 @@ export default function BracketPage({
           />
         </motion.div>
 
-        <div className="flex items-center justify-center py-1">
-          <div className="bg-secondary text-white px-6 py-1 rounded-full text-xl font-fredoka font-bold shadow-lg">
+        <div className="flex items-center justify-center py-2">
+          <div className="bg-primary text-white px-8 py-2 rounded-full text-2xl font-fredoka font-bold shadow-lg">
             VS
           </div>
         </div>
@@ -120,18 +114,13 @@ export default function BracketPage({
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex-1"
+          className="w-full"
         >
           <MovieCard
             movie={currentMatchup.movie2}
             onClick={() => pickWinner(currentMatchup.movie2)}
           />
         </motion.div>
-      </div>
-
-      {/* Instructions - Compact */}
-      <div className="text-center py-2 text-foreground/60">
-        <p className="font-nunito text-xs">Tap your favorite movie!</p>
       </div>
     </div>
   );
