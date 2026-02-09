@@ -280,8 +280,33 @@ export default function LobbyWaitingRoom({
         {/* Lobby Code */}
         <div className="text-center mb-8">
           <p className="text-sm font-nunito text-foreground/60 mb-2">Lobby Code</p>
-          <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl py-4 px-6 inline-block">
-            <p className="text-5xl font-fredoka font-black tracking-wider">{lobby.code}</p>
+          <div className="relative inline-block">
+            <div className="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl py-4 px-6">
+              <p className="text-5xl font-fredoka font-black tracking-wider">{lobby.code}</p>
+            </div>
+            {/* Copy Button */}
+            <button
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(lobby.code);
+                  // Show a brief success indicator
+                  const btn = document.getElementById('copy-btn');
+                  if (btn) {
+                    btn.textContent = '✓';
+                    setTimeout(() => {
+                      btn.textContent = '📋';
+                    }, 2000);
+                  }
+                } catch (err) {
+                  console.error('Failed to copy:', err);
+                }
+              }}
+              id="copy-btn"
+              className="absolute -top-2 -right-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform active:scale-95"
+              aria-label="Copy lobby code"
+            >
+              📋
+            </button>
           </div>
         </div>
 

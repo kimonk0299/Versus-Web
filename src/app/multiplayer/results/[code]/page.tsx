@@ -296,13 +296,22 @@ export default function MultiplayerResultsPage({
         </motion.div>
         )}
 
-        {/* Play Again Button */}
+        {/* Action Buttons */}
         <motion.div
-          className="text-center"
+          className="text-center space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
+          {/* View Bracket Button */}
+          <button
+            onClick={() => router.push(`/multiplayer/bracket/${code}`)}
+            className="w-full max-w-md bg-white text-primary border-2 border-primary rounded-xl font-fredoka font-bold text-lg px-12 py-4 hover:bg-primary hover:text-white hover:shadow-xl transition-all"
+          >
+            📊 VIEW BRACKET
+          </button>
+
+          {/* Play Again Button */}
           <button
             onClick={handlePlayAgain}
             style={{ paddingLeft: '3rem', paddingRight: '3rem', paddingTop: '2rem', paddingBottom: '2rem' }}
