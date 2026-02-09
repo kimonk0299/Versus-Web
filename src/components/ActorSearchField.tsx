@@ -42,7 +42,7 @@ export default function ActorSearchField({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-foreground/20 rounded-xl focus:border-primary focus:outline-none transition-colors font-nunito text-base text-foreground placeholder:text-foreground/40"
+        className="w-full pl-16 pr-4 py-3.5 bg-white border-2 border-foreground/20 rounded-xl focus:border-primary focus:outline-none transition-colors font-nunito text-base text-foreground placeholder:text-foreground/40"
       />
     </div>
   );

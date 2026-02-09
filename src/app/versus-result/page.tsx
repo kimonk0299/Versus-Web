@@ -137,7 +137,7 @@ function VersusResultContent() {
         >
           <button
             onClick={handlePlayAgain}
-            className="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-fredoka font-bold text-xl hover:shadow-2xl hover:scale-105 transition-all"
+            className="px-12 py-6 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-fredoka font-bold text-xl hover:shadow-2xl hover:scale-105 transition-all"
           >
             PLAY AGAIN
           </button>

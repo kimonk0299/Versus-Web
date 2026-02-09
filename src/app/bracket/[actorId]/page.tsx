@@ -132,9 +132,9 @@ export default function BracketPage({
       {/* Matchup - fills remaining space */}
       <div className="flex-1 flex flex-col gap-2 min-h-0">
         {/* Movie 1 - weight(1f) equivalent */}
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 flex items-center justify-center">
           <motion.div
-            className="h-full w-full"
+            className="h-full"
             style={{ aspectRatio: '2/3' }}
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -153,9 +153,9 @@ export default function BracketPage({
         </div>
 
         {/* Movie 2 - weight(1f) equivalent */}
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 flex items-center justify-center">
           <motion.div
-            className="h-full w-full"
+            className="h-full"
             style={{ aspectRatio: '2/3' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

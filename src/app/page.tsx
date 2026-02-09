@@ -76,7 +76,7 @@ export default function Home() {
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => setMode('single')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               mode === 'single'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
@@ -89,7 +89,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setMode('versus')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`flex items-center gap-2 px-6 py-3 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               mode === 'versus'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
