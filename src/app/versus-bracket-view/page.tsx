@@ -14,6 +14,12 @@ export default function VersusBracketViewPage() {
   const { versusBracketState } = useBracketStore();
   const [isSharing, setIsSharing] = useState(false);
 
+  // Calculate wins from completed matchups if state doesn't have them
+  const actor1Wins = versusBracketState?.actor1Wins || 0;
+  const actor2Wins = versusBracketState?.actor2Wins || 0;
+  const winnerName = versusBracketState?.winnerName ||
+    (actor1Wins > actor2Wins ? versusBracketState?.actor1Name : versusBracketState?.actor2Name);
+
   const shareAsImage = async () => {
     if (!bracketRef.current) return;
 
@@ -107,18 +113,18 @@ export default function VersusBracketViewPage() {
               <p className="text-sm font-nunito text-center mb-4 opacity-90">FINAL SCORE</p>
               <div className="flex items-center justify-around">
                 <div className="text-center">
-                  <p className="text-4xl font-fredoka font-bold">{versusBracketState.actor1Wins}</p>
+                  <p className="text-4xl font-fredoka font-bold">{actor1Wins}</p>
                   <p className="text-sm font-nunito mt-1">{versusBracketState.actor1Name}</p>
                 </div>
                 <div className="text-2xl font-fredoka">-</div>
                 <div className="text-center">
-                  <p className="text-4xl font-fredoka font-bold">{versusBracketState.actor2Wins}</p>
+                  <p className="text-4xl font-fredoka font-bold">{actor2Wins}</p>
                   <p className="text-sm font-nunito mt-1">{versusBracketState.actor2Name}</p>
                 </div>
               </div>
-              {versusBracketState.winnerName && (
+              {winnerName && (
                 <p className="text-center text-sm font-nunito mt-4 opacity-90">
-                  🏆 {versusBracketState.winnerName} Wins!
+                  🏆 {winnerName} Wins!
                 </p>
               )}
             </div>
