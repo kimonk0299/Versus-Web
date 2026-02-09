@@ -1,5 +1,8 @@
 import { Movie } from '../tmdb/types';
 
+// Re-export Movie type for convenience
+export type { Movie };
+
 /**
  * A single matchup in the bracket (two movies competing).
  */
