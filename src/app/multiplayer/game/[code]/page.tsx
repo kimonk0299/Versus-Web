@@ -88,7 +88,7 @@ export default function MultiplayerGamePage({
               overview: '',
               releaseDate: '',
               backdropPath: null,
-              character: null,
+              character: undefined,
             } : null,
             movie2: movie2 ? {
               id: movie2.id,
@@ -101,7 +101,7 @@ export default function MultiplayerGamePage({
               overview: '',
               releaseDate: '',
               backdropPath: null,
-              character: null,
+              character: undefined,
             } : null,
             winner: null,
           };
