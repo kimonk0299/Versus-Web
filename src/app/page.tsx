@@ -50,8 +50,8 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center p-6 bg-background overflow-hidden">
-      <div className="w-full max-w-md mx-auto">
+    <div className="h-screen flex flex-col p-6 bg-background overflow-y-auto">
+      <div className="w-full max-w-md mx-auto my-auto">
         {/* Film Icon */}
         <div className="text-center mb-4">
           <div className="inline-block text-6xl">🎬</div>

@@ -71,32 +71,33 @@ export default function BracketPage({
   const progress = ((bracketState.currentMatchup + 1) / totalMatchups) * 100;
 
   return (
-    <div className="h-screen flex flex-col p-4 bg-background overflow-hidden">
+    <div className="h-screen flex flex-col py-3 px-4 bg-background overflow-y-auto">
       {/* Header - Compact */}
-      <div className="text-center mb-4">
+      <div className="text-center mb-3 flex-shrink-0">
         <motion.h1
-          className="text-3xl font-fredoka font-bold text-primary mb-1"
+          className="text-2xl font-fredoka font-bold text-primary mb-1"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           {roundName}
         </motion.h1>
-        <p className="text-sm text-foreground/60 font-nunito">
+        <p className="text-xs text-foreground/60 font-nunito">
           Match {bracketState.currentMatchup + 1} of {totalMatchups}
         </p>
       </div>
 
-      <div className="text-center mb-4">
-        <p className="font-nunito text-base text-foreground/70 font-medium">Tap your pick!</p>
+      <div className="text-center mb-3 flex-shrink-0">
+        <p className="font-nunito text-sm text-foreground/70 font-medium">Tap your pick!</p>
       </div>
 
-      {/* Matchup - Maintains 2:3 aspect ratio */}
-      <div className="flex-1 flex flex-col justify-center gap-3 px-6 max-w-sm mx-auto w-full min-h-0">
+      {/* Matchup - Large posters */}
+      <div className="flex-1 flex flex-col justify-center gap-2 mx-auto w-full max-w-[320px]">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="w-full"
+          style={{ maxHeight: '45%' }}
         >
           <MovieCard
             movie={currentMatchup.movie1}
@@ -104,8 +105,8 @@ export default function BracketPage({
           />
         </motion.div>
 
-        <div className="flex items-center justify-center py-2">
-          <div className="bg-primary text-white px-8 py-2 rounded-full text-2xl font-fredoka font-bold shadow-lg">
+        <div className="flex items-center justify-center flex-shrink-0">
+          <div className="bg-primary text-white px-6 py-1.5 rounded-full text-xl font-fredoka font-bold shadow-lg">
             VS
           </div>
         </div>
@@ -115,6 +116,7 @@ export default function BracketPage({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="w-full"
+          style={{ maxHeight: '45%' }}
         >
           <MovieCard
             movie={currentMatchup.movie2}

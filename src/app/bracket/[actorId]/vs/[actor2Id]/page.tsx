@@ -85,11 +85,11 @@ export default function VersusBracketPage({
       100) || 0;
 
   return (
-    <div className="h-screen flex flex-col p-4 bg-background overflow-hidden">
+    <div className="h-screen flex flex-col py-3 px-4 bg-background overflow-y-auto">
       {/* Header with Score - Compact */}
-      <div className="mb-3">
+      <div className="mb-3 flex-shrink-0">
         <motion.h1
-          className="text-xl font-fredoka font-bold text-foreground mb-3 text-center"
+          className="text-lg font-fredoka font-bold text-foreground mb-2 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -98,15 +98,15 @@ export default function VersusBracketPage({
 
         {/* Score Bar */}
         <div className="mb-2">
-          <div className="flex justify-between items-center mb-2 px-2">
+          <div className="flex justify-between items-center mb-1 px-2">
             <div className="flex flex-col items-center">
               <span className="text-xs font-nunito text-foreground/70 truncate max-w-[120px]">{versusBracketState.actor1Name}</span>
-              <span className="text-2xl font-fredoka font-bold text-primary">{versusBracketState.actor1Wins}</span>
+              <span className="text-xl font-fredoka font-bold text-primary">{versusBracketState.actor1Wins}</span>
             </div>
-            <span className="text-lg font-fredoka font-bold text-foreground/50">VS</span>
+            <span className="text-base font-fredoka font-bold text-foreground/50">VS</span>
             <div className="flex flex-col items-center">
               <span className="text-xs font-nunito text-foreground/70 truncate max-w-[120px]">{versusBracketState.actor2Name}</span>
-              <span className="text-2xl font-fredoka font-bold text-primary">{versusBracketState.actor2Wins}</span>
+              <span className="text-xl font-fredoka font-bold text-primary">{versusBracketState.actor2Wins}</span>
             </div>
           </div>
           <p className="text-center text-xs text-foreground/60 font-nunito">
@@ -115,17 +115,18 @@ export default function VersusBracketPage({
         </div>
       </div>
 
-      <div className="text-center mb-3">
-        <p className="font-nunito text-base text-foreground/70 font-medium">Tap your pick!</p>
+      <div className="text-center mb-3 flex-shrink-0">
+        <p className="font-nunito text-sm text-foreground/70 font-medium">Tap your pick!</p>
       </div>
 
-      {/* Matchup - Maintains 2:3 aspect ratio */}
-      <div className="flex-1 flex flex-col justify-center gap-3 px-6 max-w-sm mx-auto w-full min-h-0">
+      {/* Matchup - Large posters */}
+      <div className="flex-1 flex flex-col justify-center gap-2 mx-auto w-full max-w-[320px]">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="w-full"
+          style={{ maxHeight: '45%' }}
         >
           <MovieCard
             movie={currentMatchup.movie1}
@@ -133,8 +134,8 @@ export default function VersusBracketPage({
           />
         </motion.div>
 
-        <div className="flex items-center justify-center py-2">
-          <div className="bg-primary text-white px-8 py-2 rounded-full text-2xl font-fredoka font-bold shadow-lg">
+        <div className="flex items-center justify-center flex-shrink-0">
+          <div className="bg-primary text-white px-6 py-1.5 rounded-full text-xl font-fredoka font-bold shadow-lg">
             VS
           </div>
         </div>
@@ -144,6 +145,7 @@ export default function VersusBracketPage({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
           className="w-full"
+          style={{ maxHeight: '45%' }}
         >
           <MovieCard
             movie={currentMatchup.movie2}
