@@ -9,6 +9,12 @@ export interface Lobby {
   current_matchup: number;
   is_active: boolean;
   created_at: string;
+  // Knockout tournament fields
+  current_round?: number;
+  round_matchups?: any;  // JSONB array of [movie1_id, movie2_id] pairs
+  all_movies?: any;  // JSONB array of movie objects
+  champion_movie_id?: number;
+  round_start_matchup?: number;  // Global matchup index where current round started
 }
 
 export interface Participant {

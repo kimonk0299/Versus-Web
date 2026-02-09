@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -21,11 +21,30 @@ export default function LobbyWaitingRoom({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [isHost, setIsHost] = useState(false);
+  const subscriptionsSetup = useRef(false);
 
   useEffect(() => {
     loadLobbyData();
-    subscribeToChanges();
   }, [code]);
+
+  // Set up subscriptions only after lobby data is loaded
+  useEffect(() => {
+    if (!lobby) return;
+
+    // Prevent duplicate subscriptions
+    if (subscriptionsSetup.current) {
+      console.log('⏭️ Subscriptions already set up, skipping');
+      return;
+    }
+
+    subscriptionsSetup.current = true;
+    const cleanup = subscribeToChanges();
+
+    return () => {
+      subscriptionsSetup.current = false;
+      cleanup();
+    };
+  }, [lobby]);
 
   const loadLobbyData = async () => {
     try {
@@ -61,6 +80,16 @@ export default function LobbyWaitingRoom({
   };
 
   const subscribeToChanges = () => {
+    if (!lobby) {
+      console.error('Cannot subscribe: lobby is null');
+      return () => {};
+    }
+
+    console.log('=== SETTING UP SUBSCRIPTIONS ===');
+    console.log('Lobby ID:', lobby.id);
+    console.log('Lobby Code:', code);
+    console.log('Participant ID:', participantId);
+
     // Subscribe to participant changes
     const participantsChannel = supabase
       .channel(`lobby-${code}-participants`)
@@ -71,63 +100,151 @@ export default function LobbyWaitingRoom({
           schema: 'public',
           table: 'participants',
         },
-        () => {
-          loadLobbyData();
+        async (payload) => {
+          console.log('👥 === RAW PARTICIPANT EVENT RECEIVED ===');
+          console.log('Event type:', payload.eventType);
+          console.log('Table:', payload.table);
+          console.log('Payload:', payload);
+
+          // Check if this participant belongs to our lobby
+          const eventLobbyId = payload.new?.lobby_id || payload.old?.lobby_id;
+          console.log('Event lobby ID:', eventLobbyId);
+          console.log('Our lobby ID:', lobby.id);
+
+          if (eventLobbyId !== lobby.id) {
+            console.log('⏭️ Skipping - event is for a different lobby');
+            return;
+          }
+
+          console.log('✅ Event is for OUR lobby!');
+
+          // Check if host was deleted
+          if (payload.eventType === 'DELETE' && payload.old.is_host) {
+            console.log('Host left, promoting next participant');
+
+            // Get all remaining participants ordered by join time
+            const { data: remainingParticipants } = await supabase
+              .from('participants')
+              .select('*')
+              .eq('lobby_id', lobby.id)
+              .order('joined_at', { ascending: true });
+
+            // Promote the first participant (oldest join time) to host
+            if (remainingParticipants && remainingParticipants.length > 0) {
+              await supabase
+                .from('participants')
+                .update({ is_host: true })
+                .eq('id', remainingParticipants[0].id);
+
+              console.log('New host:', remainingParticipants[0].name);
+            }
+          }
+
+          console.log('Reloading lobby data...');
+          await loadLobbyData();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Participants subscription status:', status);
+      });
 
     // Subscribe to lobby changes (for game start)
+    // NOTE: Removed filter to test if ANY events come through
     const lobbyChannel = supabase
-      .channel(`lobby-${code}`)
+      .channel(`lobby-${code}-lobby`)
       .on(
         'postgres_changes',
         {
-          event: 'UPDATE',
+          event: '*',  // Listen to ALL events (INSERT, UPDATE, DELETE)
           schema: 'public',
           table: 'lobbies',
+          // Removed filter to test
         },
         (payload) => {
+          console.log('🔔 === RAW LOBBY EVENT RECEIVED ===');
+          console.log('Event type:', payload.eventType);
+          console.log('Table:', payload.table);
+          console.log('Payload:', payload);
+
+          // Check if this is our lobby
+          const eventLobbyId = payload.new?.id || payload.old?.id;
+          console.log('Event lobby ID:', eventLobbyId);
+          console.log('Our lobby ID:', lobby.id);
+
+          if (eventLobbyId !== lobby.id) {
+            console.log('⏭️ Skipping - event is for a different lobby');
+            return;
+          }
+
+          console.log('✅ Event is for OUR lobby!');
+          console.log('Old lobby:', payload.old);
+          console.log('New lobby:', payload.new);
+
           const updatedLobby = payload.new as Lobby;
+          console.log('Updated lobby current_matchup:', updatedLobby.current_matchup);
+
           if (updatedLobby.current_matchup > 0) {
             // Game started!
-            router.push(`/multiplayer/game/${code}?participant=${participantId}`);
+            console.log('🎮 GAME STARTING - Navigating to game page...');
+            const gameUrl = `/multiplayer/game/${code}?participant=${participantId}`;
+            console.log('Navigation URL:', gameUrl);
+            router.push(gameUrl);
+          } else {
+            console.log('❌ Game NOT starting (current_matchup is', updatedLobby.current_matchup, ')');
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Lobby subscription status:', status);
+      });
+
+    console.log('=== SUBSCRIPTIONS SET UP COMPLETE ===');
 
     return () => {
+      console.log('Cleaning up subscriptions');
       supabase.removeChannel(participantsChannel);
       supabase.removeChannel(lobbyChannel);
     };
   };
 
   const handleStartGame = async () => {
-    if (!lobby) return;
+    if (!lobby) {
+      console.error('Cannot start game: lobby is null');
+      return;
+    }
 
     try {
-      console.log('Starting game for lobby:', lobby.id);
+      console.log('=== STARTING GAME ===');
+      console.log('Lobby ID:', lobby.id);
+      console.log('Lobby Code:', code);
 
-      const { data, error: updateError } = await supabase
-        .from('lobbies')
-        .update({ current_matchup: 1 })
-        .eq('id', lobby.id)
-        .select();
+      // Call the start game API
+      const response = await fetch(`/api/lobbies/${code}/start-game`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-      if (updateError) {
-        console.error('Update error:', updateError);
-        throw updateError;
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Start game API error:', response.status, data);
+        throw new Error(data.error || 'Failed to start game');
       }
 
-      console.log('Update successful:', data);
+      console.log('Start game API response:', data);
 
-      // Also manually navigate after a short delay if subscription doesn't work
+      console.log('✅ Game started successfully');
+
+      // Fallback navigation after 3 seconds if subscription doesn't work
+      // This gives time for the real-time event to propagate to other players
+      console.log('Setting fallback timeout (3s) for manual navigation...');
       setTimeout(() => {
+        console.log('⚠️ Fallback timeout fired - subscription may not be working');
+        console.log('Manually navigating...');
         router.push(`/multiplayer/game/${code}?participant=${participantId}`);
-      }, 1000);
+      }, 3000);
     } catch (err: any) {
-      console.error('Start game error:', err);
+      console.error('❌ Start game error:', err);
       setError(err.message || 'Failed to start game');
     }
   };
@@ -170,13 +287,29 @@ export default function LobbyWaitingRoom({
 
         {/* Matchup Info */}
         <div className="bg-white rounded-2xl p-6 shadow-xl mb-6">
-          <p className="text-xs font-nunito text-foreground/60 mb-3 text-center">MATCHUP</p>
-          <p className="text-2xl font-fredoka font-bold text-center">
-            {lobby.actor1_name} <span className="text-primary">VS</span> {lobby.actor2_name}
-          </p>
-          <p className="text-sm font-nunito text-foreground/60 mt-2 text-center">
-            {lobby.movie_count} movies each
-          </p>
+          {lobby.actor1_id === lobby.actor2_id ? (
+            // Single actor mode
+            <>
+              <p className="text-xs font-nunito text-foreground/60 mb-3 text-center">TOURNAMENT</p>
+              <p className="text-2xl font-fredoka font-bold text-center text-primary">
+                {lobby.actor1_name}
+              </p>
+              <p className="text-sm font-nunito text-foreground/60 mt-2 text-center">
+                Knockout Tournament • {lobby.movie_count} movies
+              </p>
+            </>
+          ) : (
+            // Versus mode
+            <>
+              <p className="text-xs font-nunito text-foreground/60 mb-3 text-center">MATCHUP</p>
+              <p className="text-2xl font-fredoka font-bold text-center">
+                {lobby.actor1_name} <span className="text-primary">VS</span> {lobby.actor2_name}
+              </p>
+              <p className="text-sm font-nunito text-foreground/60 mt-2 text-center">
+                {lobby.movie_count} movies each
+              </p>
+            </>
+          )}
         </div>
 
         {/* Participants */}
@@ -241,7 +374,16 @@ export default function LobbyWaitingRoom({
 
         {/* Leave Button */}
         <button
-          onClick={() => router.push('/')}
+          onClick={async () => {
+            // Delete participant from database
+            if (participantId) {
+              await supabase
+                .from('participants')
+                .delete()
+                .eq('id', participantId);
+            }
+            router.push('/');
+          }}
           style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
           className="mt-4 w-full bg-white text-foreground/70 border-2 border-foreground/20 rounded-xl font-nunito font-medium transition-all hover:border-foreground/40"
         >

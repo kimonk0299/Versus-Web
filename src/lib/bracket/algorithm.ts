@@ -67,16 +67,51 @@ export function getRoundName(matchupCount: number): string {
 }
 
 /**
+ * Simple seeded random number generator (using mulberry32 algorithm).
+ * Ensures consistent randomness across all clients when given the same seed.
+ *
+ * @param seed Numeric seed
+ * @returns Random number generator function
+ */
+function seededRandom(seed: number) {
+  return function() {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Convert a string (like UUID) to a numeric seed.
+ *
+ * @param str String to convert
+ * @returns Numeric seed
+ */
+function stringToSeed(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
+}
+
+/**
  * Shuffle an array (Fisher-Yates shuffle).
  * Used for versus mode to randomly pair movies from two actors.
  *
  * @param array Array to shuffle
+ * @param seed Optional seed for consistent shuffling across clients (e.g., lobby ID)
  * @returns New shuffled array
  */
-export function shuffleArray<T>(array: T[]): T[] {
+export function shuffleArray<T>(array: T[], seed?: string): T[] {
   const shuffled = [...array];
+  const random = seed ? seededRandom(stringToSeed(seed)) : Math.random;
+
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
@@ -92,12 +127,14 @@ export function shuffleArray<T>(array: T[]): T[] {
  *
  * @param movies1 Actor 1's movies
  * @param movies2 Actor 2's movies
+ * @param seed Optional seed for consistent shuffling (e.g., lobby ID for multiplayer)
  * @returns List of matchups
  */
-export function createVersusMatchups(movies1: Movie[], movies2: Movie[]): Matchup[] {
+export function createVersusMatchups(movies1: Movie[], movies2: Movie[], seed?: string): Matchup[] {
   // CRITICAL: Shuffle EACH actor's movies independently
-  const shuffled1 = shuffleArray(movies1);
-  const shuffled2 = shuffleArray(movies2);
+  // Use seed + suffix to ensure different shuffles for each actor
+  const shuffled1 = shuffleArray(movies1, seed ? `${seed}-actor1` : undefined);
+  const shuffled2 = shuffleArray(movies2, seed ? `${seed}-actor2` : undefined);
 
   // Pair by index
   const pairCount = Math.min(shuffled1.length, shuffled2.length);

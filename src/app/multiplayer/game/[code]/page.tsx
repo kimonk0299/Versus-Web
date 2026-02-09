@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { getTopMovies } from '@/lib/tmdb/repository';
-import { createVersusMatchups } from '@/lib/bracket/algorithm';
+import { createVersusMatchups, createMatchups, shuffleArray } from '@/lib/bracket/algorithm';
 import MovieCard from '@/components/MovieCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { motion } from 'framer-motion';
@@ -61,13 +61,67 @@ export default function MultiplayerGamePage({
       if (participantsError) throw participantsError;
       setParticipants(participantsData);
 
-      // Fetch movies and create matchups
-      const [movies1, movies2] = await Promise.all([
-        getTopMovies(lobbyData.actor1_id, lobbyData.movie_count),
-        getTopMovies(lobbyData.actor2_id, lobbyData.movie_count),
-      ]);
+      // Check if this is single actor mode (both actors are the same)
+      const isSingleActorMode = lobbyData.actor1_id === lobbyData.actor2_id;
 
-      const matchupsData = createVersusMatchups(movies1, movies2);
+      let matchupsData: Matchup[];
+
+      if (isSingleActorMode && lobbyData.round_matchups) {
+        // Single actor knockout: load matchups from database
+        const roundMatchups = lobbyData.round_matchups as number[][];
+        const allMovies = lobbyData.all_movies as any[];
+
+        // Convert stored matchups to Matchup objects
+        matchupsData = roundMatchups.map(([movie1Id, movie2Id]) => {
+          const movie1 = allMovies.find(m => m.id === movie1Id);
+          const movie2 = allMovies.find(m => m.id === movie2Id);
+
+          return {
+            movie1: movie1 ? {
+              id: movie1.id,
+              title: movie1.title,
+              posterPath: movie1.posterPath,
+              releaseYear: movie1.releaseYear,
+              voteAverage: 0,
+              voteCount: 0,
+              popularity: 0,
+              overview: '',
+              releaseDate: '',
+              backdropPath: null,
+              character: null,
+            } : null,
+            movie2: movie2 ? {
+              id: movie2.id,
+              title: movie2.title,
+              posterPath: movie2.posterPath,
+              releaseYear: movie2.releaseYear,
+              voteAverage: 0,
+              voteCount: 0,
+              popularity: 0,
+              overview: '',
+              releaseDate: '',
+              backdropPath: null,
+              character: null,
+            } : null,
+            winner: null,
+          };
+        }).filter(m => m.movie1 && m.movie2) as Matchup[];
+
+        console.log('Loaded', matchupsData.length, 'matchups for Round', lobbyData.current_round);
+      } else if (!isSingleActorMode) {
+        // Versus mode: fetch both actors' movies and create versus matchups
+        const [movies1, movies2] = await Promise.all([
+          getTopMovies(lobbyData.actor1_id, lobbyData.movie_count),
+          getTopMovies(lobbyData.actor2_id, lobbyData.movie_count),
+        ]);
+
+        // Use lobby ID as seed to ensure all players see the same matchups
+        matchupsData = createVersusMatchups(movies1, movies2, lobbyData.id);
+      } else {
+        // Fallback: no matchups yet
+        matchupsData = [];
+      }
+
       setMatchups(matchupsData);
 
       // Load votes for current matchup
@@ -96,6 +150,8 @@ export default function MultiplayerGamePage({
   };
 
   const subscribeToVotes = () => {
+    if (!lobby) return;
+
     const channel = supabase
       .channel(`game-${code}-votes`)
       .on(
@@ -104,15 +160,30 @@ export default function MultiplayerGamePage({
           event: 'INSERT',
           schema: 'public',
           table: 'votes',
+          filter: `lobby_id=eq.${lobby.id}`,
         },
         (payload) => {
           const newVote = payload.new as Vote;
-          if (lobby && newVote.matchup_index === lobby.current_matchup - 1) {
-            setVotes(prev => [...prev, newVote]);
-            if (newVote.participant_id === participantId) {
-              setHasVoted(true);
+          console.log('New vote received:', newVote);
+
+          // Use state callback to get current lobby value
+          setLobby(currentLobby => {
+            if (currentLobby && newVote.matchup_index === currentLobby.current_matchup - 1) {
+              console.log('Vote is for current matchup, adding to votes');
+              setVotes(prev => {
+                // Avoid duplicates
+                if (prev.some(v => v.id === newVote.id)) return prev;
+                console.log('Adding vote, new count:', prev.length + 1);
+                return [...prev, newVote];
+              });
+              if (newVote.participant_id === participantId) {
+                setHasVoted(true);
+              }
+            } else {
+              console.log('Vote is for different matchup, ignoring');
             }
-          }
+            return currentLobby;
+          });
         }
       )
       .subscribe();
@@ -123,6 +194,8 @@ export default function MultiplayerGamePage({
   };
 
   const subscribeToLobbyUpdates = () => {
+    if (!lobby) return;
+
     const channel = supabase
       .channel(`game-${code}-lobby`)
       .on(
@@ -131,9 +204,11 @@ export default function MultiplayerGamePage({
           event: 'UPDATE',
           schema: 'public',
           table: 'lobbies',
+          filter: `id=eq.${lobby.id}`,
         },
         async (payload) => {
           const updatedLobby = payload.new as Lobby;
+          console.log('Lobby updated:', updatedLobby);
 
           // Check if game completed
           if (!updatedLobby.is_active) {
@@ -141,12 +216,37 @@ export default function MultiplayerGamePage({
             return;
           }
 
-          // Check if matchup advanced
-          if (updatedLobby.current_matchup !== lobby?.current_matchup) {
-            setLobby(updatedLobby);
-            setVotes([]);
-            setHasVoted(false);
-            await loadCurrentVotes(updatedLobby);
+          // Check if matchup or round advanced
+          const matchupChanged = updatedLobby.current_matchup !== lobby?.current_matchup;
+          const roundChanged = updatedLobby.current_round !== lobby?.current_round;
+
+          if (matchupChanged || roundChanged) {
+            console.log('Matchup/Round changed - reloading game data');
+
+            if (roundChanged) {
+              console.log('Round advanced from', lobby?.current_round, 'to', updatedLobby.current_round);
+              // Reload entire game (new round means new matchups)
+              await loadGameData();
+            } else {
+              console.log('Matchup advanced from', lobby?.current_matchup, 'to', updatedLobby.current_matchup);
+              setLobby(updatedLobby);
+              setVotes([]);
+              setHasVoted(false);
+
+              // Reload votes for the new matchup
+              const { data: newVotes } = await supabase
+                .from('votes')
+                .select('*')
+                .eq('lobby_id', updatedLobby.id)
+                .eq('matchup_index', updatedLobby.current_matchup - 1);
+
+              if (newVotes) {
+                console.log('Loaded', newVotes.length, 'votes for new matchup');
+                setVotes(newVotes);
+                const userVoted = newVotes.some(v => v.participant_id === participantId);
+                setHasVoted(userVoted);
+              }
+            }
           }
         }
       )
@@ -174,22 +274,20 @@ export default function MultiplayerGamePage({
       const data = await response.json();
 
       if (!response.ok) {
+        // Handle duplicate vote gracefully
+        if (response.status === 400 && data.error === 'Already voted for this matchup') {
+          console.log('Already voted, ignoring duplicate vote attempt');
+          setHasVoted(true);
+          return;
+        }
         throw new Error(data.error || 'Failed to vote');
       }
 
-      // If all voted, check if we need to end game or just advance
-      if (data.allVoted) {
-        const isLastMatchup = lobby.current_matchup >= matchups.length;
-
-        if (isLastMatchup) {
-          // End the game
-          await supabase
-            .from('lobbies')
-            .update({ is_active: false })
-            .eq('id', lobby.id);
-        }
-        // Otherwise the vote route already advanced the matchup
-      }
+      // Server-side vote route handles all game logic:
+      // - Advances to next matchup
+      // - Creates new rounds when round completes
+      // - Sets is_active: false and champion_movie_id when tournament completes
+      // Client just subscribes to lobby updates and reacts accordingly
     } catch (err: any) {
       console.error('Vote error:', err);
       setError(err.message);
@@ -218,14 +316,59 @@ export default function MultiplayerGamePage({
     );
   }
 
-  const currentMatchup = matchups[lobby.current_matchup - 1];
+  // Calculate the matchup index within the current round
+  // current_matchup is a global counter, round_start_matchup tells us where this round began
+  const matchupIndexInRound = lobby.current_matchup - (lobby.round_start_matchup || 1);
+  const currentMatchup = matchups[matchupIndexInRound];
+
   if (!currentMatchup) {
+    console.error('No matchup found at index', matchupIndexInRound, 'in round', lobby.current_round);
+    console.error('current_matchup:', lobby.current_matchup, 'round_start_matchup:', lobby.round_start_matchup);
+    console.error('matchups array length:', matchups.length);
     return <LoadingSpinner />;
   }
 
+  const isSingleActorMode = lobby.actor1_id === lobby.actor2_id;
   const voteProgress = votes.length;
   const totalPlayers = participants.length;
   const progressPercent = (voteProgress / totalPlayers) * 100;
+
+  // Calculate round info for bracket-style display
+  let roundName = '';
+  let roundProgress = 0;
+  let matchupInRound = 0;
+  let totalInRound = 0;
+
+  if (isSingleActorMode) {
+    // Use actual round number from database
+    const currentRound = lobby.current_round || 1;
+    totalInRound = matchups.length;
+    // Calculate position within round (1-indexed for display)
+    matchupInRound = matchupIndexInRound + 1;
+
+    // Determine round name based on number of matchups
+    switch (totalInRound) {
+      case 16:
+        roundName = 'Round of 32';
+        break;
+      case 8:
+        roundName = 'Round of 16';
+        break;
+      case 4:
+        roundName = 'Quarterfinals';
+        break;
+      case 2:
+        roundName = 'Semifinals';
+        break;
+      case 1:
+        roundName = 'Finals';
+        break;
+      default:
+        roundName = `Round ${currentRound}`;
+    }
+
+    roundProgress = (matchupInRound / totalInRound) * 100;
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background p-4">
@@ -254,14 +397,31 @@ export default function MultiplayerGamePage({
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {lobby.actor1_name} VS {lobby.actor2_name}
+          {isSingleActorMode ? `${lobby.actor1_name} Tournament` : `${lobby.actor1_name} VS ${lobby.actor2_name}`}
         </motion.h1>
 
         <div className="h-1" />
 
-        <p className="text-sm text-foreground/60 font-nunito">
-          Match {lobby.current_matchup} of {matchups.length}
-        </p>
+        {isSingleActorMode ? (
+          <>
+            <p className="text-sm text-foreground/60 font-nunito">
+              Match {matchupInRound} of {totalInRound}
+            </p>
+            {/* Round Progress Bar */}
+            <div className="mt-2 h-1 bg-surface-variant rounded-full overflow-hidden max-w-xs mx-auto">
+              <motion.div
+                className="h-full bg-primary rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${roundProgress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-foreground/60 font-nunito">
+            Match {lobby.current_matchup} of {matchups.length}
+          </p>
+        )}
 
         {/* 8dp spacing */}
         <div className="h-2" />

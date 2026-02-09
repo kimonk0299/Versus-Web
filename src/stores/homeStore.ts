@@ -51,8 +51,17 @@ export const useHomeStore = create<HomeState>((set, get) => ({
 
   setActor1Query: (query) => {
     // Search for suggestions as user types
-    const suggestions = query.length >= 2 ? searchPresetActors(query) : [];
-    set({ actor1Query: query, actor1Suggestions: suggestions });
+    const rawSuggestions = query.length >= 2 ? searchPresetActors(query) : [];
+
+    // Deduplicate by ID (preset_actors.json has some duplicate TMDb IDs)
+    const uniqueSuggestions = rawSuggestions.reduce((acc, actor) => {
+      if (!acc.find(a => a.id === actor.id)) {
+        acc.push(actor);
+      }
+      return acc;
+    }, [] as PresetActor[]);
+
+    set({ actor1Query: query, actor1Suggestions: uniqueSuggestions });
 
     // Check for exact match
     const exactMatch = findActorByExactName(query);
@@ -80,8 +89,17 @@ export const useHomeStore = create<HomeState>((set, get) => ({
   },
 
   setActor2Query: (query) => {
-    const suggestions = query.length >= 2 ? searchPresetActors(query) : [];
-    set({ actor2Query: query, actor2Suggestions: suggestions });
+    const rawSuggestions = query.length >= 2 ? searchPresetActors(query) : [];
+
+    // Deduplicate by ID (preset_actors.json has some duplicate TMDb IDs)
+    const uniqueSuggestions = rawSuggestions.reduce((acc, actor) => {
+      if (!acc.find(a => a.id === actor.id)) {
+        acc.push(actor);
+      }
+      return acc;
+    }, [] as PresetActor[]);
+
+    set({ actor2Query: query, actor2Suggestions: uniqueSuggestions });
 
     const exactMatch = findActorByExactName(query);
     if (exactMatch) {

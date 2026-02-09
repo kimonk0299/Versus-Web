@@ -17,7 +17,7 @@ import { MAX_CAST_ORDER } from '../constants';
 export async function getTopMovies(actorId: number, count: number = 16): Promise<Movie[]> {
   const response = await getPersonMovieCredits(actorId);
 
-  return response.cast
+  const movies = response.cast
     // Filter out entries with no title (poster is optional)
     .filter(item => item.title != null)
     // CRITICAL: Filter out cameos and minor roles (order >= 10)
@@ -45,7 +45,17 @@ export async function getTopMovies(actorId: number, count: number = 16): Promise
         popularity: castItem.vote_count * castItem.vote_average,
         character: castItem.character,
       } as Movie;
-    })
+    });
+
+  // CRITICAL: Deduplicate by movie ID (actor might appear multiple times in same movie)
+  const uniqueMovies = movies.reduce((acc, movie) => {
+    if (!acc.find(m => m.id === movie.id)) {
+      acc.push(movie);
+    }
+    return acc;
+  }, [] as Movie[]);
+
+  return uniqueMovies
     // Sort by popularity (highest first)
     .sortedByDescending(movie => movie.popularity)
     // Take only the top N movies
