@@ -1,12 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useHomeStore } from '@/stores/homeStore';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
-export default function MultiplayerPage() {
+function MultiplayerContent() {
   const router = useRouter();
-  const { movieCount, setMovieCount, actor1Query, actor1Id, actor2Query, actor2Id } = useHomeStore();
+  const searchParams = useSearchParams();
+
+  // Get parameters from URL
+  const mode = searchParams.get('mode') || 'versus';
+  const actor1Id = parseInt(searchParams.get('actor1') || '0');
+  const actor2Id = parseInt(searchParams.get('actor2') || '0');
+  const movieCount = parseInt(searchParams.get('count') || '16');
+  const actor1Name = searchParams.get('name1') || 'Actor 1';
+  const actor2Name = searchParams.get('name2') || 'Actor 2';
   const [mode, setMode] = useState<'menu' | 'create' | 'join'>('menu');
   const [hostName, setHostName] = useState('');
   const [joinCode, setJoinCode] = useState('');
@@ -20,8 +28,8 @@ export default function MultiplayerPage() {
       return;
     }
 
-    if (!actor1Id || !actor2Id) {
-      setError('Please select two actors on the home page first');
+    if (!actor1Id || (mode === 'versus' && !actor2Id)) {
+      setError(`Please select ${mode === 'single' ? 'an actor' : 'two actors'} first`);
       return;
     }
 
@@ -34,9 +42,9 @@ export default function MultiplayerPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           actor1_id: actor1Id,
-          actor2_id: actor2Id,
-          actor1_name: actor1Query,
-          actor2_name: actor2Query,
+          actor2_id: mode === 'single' ? actor1Id : actor2Id,  // Use same actor for single mode
+          actor1_name: actor1Name,
+          actor2_name: mode === 'single' ? actor1Name : actor2Name,
           movie_count: movieCount,
           host_name: hostName,
         }),
@@ -165,26 +173,32 @@ export default function MultiplayerPage() {
             </div>
 
             <div className="bg-surface-variant rounded-xl p-4">
-              <p className="text-sm font-nunito text-foreground/70 mb-2">Selected Matchup:</p>
+              <p className="text-sm font-nunito text-foreground/70 mb-2">
+                {mode === 'single' ? 'Selected Actor:' : 'Selected Matchup:'}
+              </p>
               <p className="font-nunito font-bold text-foreground">
-                {actor1Query || 'Actor 1'} <span className="text-primary">VS</span> {actor2Query || 'Actor 2'}
+                {mode === 'single' ? (
+                  actor1Name
+                ) : (
+                  <>{actor1Name} <span className="text-primary">VS</span> {actor2Name}</>
+                )}
               </p>
               <p className="text-xs font-nunito text-foreground/60 mt-1">
-                {movieCount} movies each
+                {movieCount} movies {mode === 'versus' ? 'each' : 'total'}
               </p>
-              {(!actor1Id || !actor2Id) && (
+              {(!actor1Id || (mode === 'versus' && !actor2Id)) && (
                 <p className="text-xs font-nunito text-secondary mt-2">
-                  ⚠️ Please select actors on the home page first
+                  ⚠️ Please select {mode === 'single' ? 'an actor' : 'two actors'} first
                 </p>
               )}
             </div>
 
             <button
               onClick={handleCreateLobby}
-              disabled={isLoading || !hostName.trim() || !actor1Id || !actor2Id}
+              disabled={isLoading || !hostName.trim() || !actor1Id || (mode === 'versus' && !actor2Id)}
               style={{ paddingLeft: '2rem', paddingRight: '2rem', paddingTop: '1.25rem', paddingBottom: '1.25rem' }}
               className={`w-full rounded-2xl font-fredoka font-bold text-base transition-all ${
-                isLoading || !hostName.trim() || !actor1Id || !actor2Id
+                isLoading || !hostName.trim() || !actor1Id || (mode === 'versus' && !actor2Id)
                   ? 'bg-foreground/10 text-foreground/30 cursor-not-allowed'
                   : 'bg-primary text-white hover:shadow-lg'
               }`}
@@ -242,5 +256,13 @@ export default function MultiplayerPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function MultiplayerPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <MultiplayerContent />
+    </Suspense>
   );
 }
