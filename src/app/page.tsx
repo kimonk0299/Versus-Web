@@ -10,6 +10,8 @@ export default function Home() {
   const {
     mode,
     setMode,
+    movieCount,
+    setMovieCount,
     actor1Query,
     actor1Id,
     actor1Suggestions,
@@ -27,20 +29,20 @@ export default function Home() {
   const handleStartTournament = () => {
     if (mode === 'single') {
       if (needsDisambiguation(1)) {
-        router.push(`/disambiguation/${encodeURIComponent(actor1Query)}`);
+        router.push(`/disambiguation/${encodeURIComponent(actor1Query)}?count=${movieCount}`);
       } else if (actor1Id) {
-        router.push(`/bracket/${actor1Id}`);
+        router.push(`/bracket/${actor1Id}?count=${movieCount}`);
       }
     } else {
       const needsDisamb1 = needsDisambiguation(1);
       const needsDisamb2 = needsDisambiguation(2);
 
       if (needsDisamb1) {
-        router.push(`/disambiguation/${encodeURIComponent(actor1Query)}?mode=versus&next=actor2`);
+        router.push(`/disambiguation/${encodeURIComponent(actor1Query)}?mode=versus&next=actor2&count=${movieCount}`);
       } else if (needsDisamb2) {
-        router.push(`/disambiguation/${encodeURIComponent(actor2Query)}?mode=versus&actor1=${actor1Id}`);
+        router.push(`/disambiguation/${encodeURIComponent(actor2Query)}?mode=versus&actor1=${actor1Id}&count=${movieCount}`);
       } else if (actor1Id && actor2Id) {
-        router.push(`/bracket/${actor1Id}/vs/${actor2Id}`);
+        router.push(`/bracket/${actor1Id}/vs/${actor2Id}?count=${movieCount}`);
       }
     }
   };
@@ -99,6 +101,50 @@ export default function Home() {
               <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
             </svg>
             Actor vs Actor
+          </button>
+        </div>
+
+        {/* 16dp spacing */}
+        <div className="h-4" />
+
+        {/* Movie Count Selector */}
+        <h2 className="text-xl font-nunito font-medium text-foreground text-center">
+          Number of Movies
+        </h2>
+
+        {/* 8dp spacing */}
+        <div className="h-2" />
+
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={() => setMovieCount(8)}
+            className={`px-6 py-3 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+              movieCount === 8
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-foreground/70 border-foreground/20'
+            }`}
+          >
+            8
+          </button>
+          <button
+            onClick={() => setMovieCount(16)}
+            className={`px-6 py-3 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+              movieCount === 16
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-foreground/70 border-foreground/20'
+            }`}
+          >
+            16
+          </button>
+          <button
+            onClick={() => setMovieCount(32)}
+            className={`px-6 py-3 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+              movieCount === 32
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-foreground/70 border-foreground/20'
+            }`}
+          >
+            32
           </button>
         </div>
 
@@ -171,8 +217,8 @@ export default function Home() {
         {/* Hint text */}
         <p className="text-sm text-foreground/50 text-center font-nunito leading-relaxed">
           {mode === 'single'
-            ? 'Pick an actor and their top 16 movies\nbattle it out in a tournament bracket!'
-            : 'Pick two actors and their top movies\ngo head to head — the actor with more wins takes it!'}
+            ? `Pick an actor and their top ${movieCount} movies\nbattle it out in a tournament bracket!`
+            : `Pick two actors and their top ${movieCount} movies each\ngo head to head — the actor with more wins takes it!`}
         </p>
       </div>
     </div>

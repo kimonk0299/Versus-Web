@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useBracketStore } from '@/stores/bracketStore';
 import MovieCard from '@/components/MovieCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -15,15 +15,17 @@ export default function BracketPage({
 }) {
   const { actorId } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { bracketState, isLoading, error, loadSingleActor, pickWinner } =
     useBracketStore();
 
   useEffect(() => {
     const id = parseInt(actorId, 10);
+    const count = parseInt(searchParams.get('count') || '16', 10) as 8 | 16 | 32;
     if (!isNaN(id)) {
-      loadSingleActor(id);
+      loadSingleActor(id, count);
     }
-  }, [actorId, loadSingleActor]);
+  }, [actorId, searchParams, loadSingleActor]);
 
   useEffect(() => {
     if (bracketState?.isComplete && bracketState.champion) {

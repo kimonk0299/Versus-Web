@@ -15,6 +15,7 @@ function DisambiguationContent({ query }: { query: string }) {
   const mode = searchParams.get('mode');
   const actor1Id = searchParams.get('actor1');
   const nextStep = searchParams.get('next');
+  const count = searchParams.get('count') || '16';
 
   useEffect(() => {
     searchActors(decodedQuery);
@@ -24,14 +25,14 @@ function DisambiguationContent({ query }: { query: string }) {
     if (mode === 'versus') {
       if (nextStep === 'actor2') {
         // This was actor1 disambiguation, now navigate back to home or to actor2 disambiguation
-        router.push(`/?mode=versus&actor1=${actorId}`);
+        router.push(`/?mode=versus&actor1=${actorId}&count=${count}`);
       } else if (actor1Id) {
         // This was actor2 disambiguation, now go to bracket
-        router.push(`/bracket/${actor1Id}/vs/${actorId}`);
+        router.push(`/bracket/${actor1Id}/vs/${actorId}?count=${count}`);
       }
     } else {
       // Single actor mode
-      router.push(`/bracket/${actorId}`);
+      router.push(`/bracket/${actorId}?count=${count}`);
     }
   };
 

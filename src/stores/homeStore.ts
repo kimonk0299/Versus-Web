@@ -3,11 +3,16 @@ import { PresetActor } from '@/lib/tmdb/types';
 import { searchPresetActors, findActorByExactName } from '@/lib/preset-actors/database';
 
 type TournamentMode = 'single' | 'versus';
+type MovieCount = 8 | 16 | 32;
 
 interface HomeState {
   // Mode selection
   mode: TournamentMode;
   setMode: (mode: TournamentMode) => void;
+
+  // Movie count selection
+  movieCount: MovieCount;
+  setMovieCount: (count: MovieCount) => void;
 
   // Actor 1 search
   actor1Query: string;
@@ -33,6 +38,7 @@ interface HomeState {
 export const useHomeStore = create<HomeState>((set, get) => ({
   // Initial state
   mode: 'single',
+  movieCount: 16,
   actor1Query: '',
   actor1Id: null,
   actor1Suggestions: [],
@@ -41,6 +47,7 @@ export const useHomeStore = create<HomeState>((set, get) => ({
   actor2Suggestions: [],
 
   setMode: (mode) => set({ mode }),
+  setMovieCount: (count) => set({ movieCount: count }),
 
   setActor1Query: (query) => {
     // Search for suggestions as user types

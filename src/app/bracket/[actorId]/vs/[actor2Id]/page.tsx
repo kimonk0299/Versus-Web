@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useBracketStore } from '@/stores/bracketStore';
 import MovieCard from '@/components/MovieCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -14,16 +14,18 @@ export default function VersusBracketPage({
 }) {
   const { actorId, actor2Id } = use(params);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { versusBracketState, isLoading, error, loadVersusActors, pickWinner } =
     useBracketStore();
 
   useEffect(() => {
     const id1 = parseInt(actorId, 10);
     const id2 = parseInt(actor2Id, 10);
+    const count = parseInt(searchParams.get('count') || '16', 10) as 8 | 16 | 32;
     if (!isNaN(id1) && !isNaN(id2)) {
-      loadVersusActors(id1, id2);
+      loadVersusActors(id1, id2, count);
     }
-  }, [actorId, actor2Id, loadVersusActors]);
+  }, [actorId, actor2Id, searchParams, loadVersusActors]);
 
   useEffect(() => {
     // Check if versus battle is complete

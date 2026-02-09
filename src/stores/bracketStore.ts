@@ -16,8 +16,8 @@ interface BracketStoreState {
   error: string | null;
 
   // Actions
-  loadSingleActor: (actorId: number) => Promise<void>;
-  loadVersusActors: (actor1Id: number, actor2Id: number) => Promise<void>;
+  loadSingleActor: (actorId: number, movieCount?: number) => Promise<void>;
+  loadVersusActors: (actor1Id: number, actor2Id: number, movieCount?: number) => Promise<void>;
   pickWinner: (winner: Movie) => void;
   reset: () => void;
 }
@@ -32,12 +32,12 @@ export const useBracketStore = create<BracketStoreState>((set, get) => ({
   /**
    * Load a single actor's movies and initialize the bracket.
    */
-  loadSingleActor: async (actorId: number) => {
+  loadSingleActor: async (actorId: number, movieCount: number = 16) => {
     set({ isLoading: true, error: null, isVersusMode: false });
 
     try {
-      // Fetch top 16 movies for this actor
-      const movies = await getTopMovies(actorId, 16);
+      // Fetch top movies for this actor
+      const movies = await getTopMovies(actorId, movieCount);
 
       if (movies.length < 2) {
         set({
@@ -75,7 +75,7 @@ export const useBracketStore = create<BracketStoreState>((set, get) => ({
   /**
    * Load two actors' movies and initialize versus mode.
    */
-  loadVersusActors: async (actor1Id: number, actor2Id: number) => {
+  loadVersusActors: async (actor1Id: number, actor2Id: number, movieCount: number = 16) => {
     set({ isLoading: true, error: null, isVersusMode: true });
 
     try {
@@ -85,10 +85,10 @@ export const useBracketStore = create<BracketStoreState>((set, get) => ({
         getPersonDetails(actor2Id),
       ]);
 
-      // Fetch top 16 movies from each actor
+      // Fetch top movies from each actor
       const [movies1, movies2] = await Promise.all([
-        getTopMovies(actor1Id, 16),
-        getTopMovies(actor2Id, 16),
+        getTopMovies(actor1Id, movieCount),
+        getTopMovies(actor2Id, movieCount),
       ]);
 
       if (movies1.length < 2 || movies2.length < 2) {
