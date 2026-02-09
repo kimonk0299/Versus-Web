@@ -73,7 +73,7 @@ export async function POST(
       uniqueMovies.sort((a: any, b: any) => b.popularity - a.popularity);
       const topMovies = uniqueMovies.slice(0, lobby.movie_count);
 
-      const shuffled = shuffleArray(topMovies, lobby.id);
+      const shuffled = shuffleArray(topMovies, lobby.id) as any[];
 
       // Create Round 1 matchups (pair adjacent movies)
       const round1Matchups: number[][] = [];
