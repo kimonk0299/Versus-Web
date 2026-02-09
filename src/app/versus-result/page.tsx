@@ -93,9 +93,7 @@ function VersusResultContent() {
         >
           {/* View Bracket Button */}
           <button
-            onClick={() => {
-              alert('Bracket view coming soon for single player!');
-            }}
+            onClick={() => router.push('/versus-bracket-view')}
             className="w-full max-w-md bg-white text-primary border-2 border-primary rounded-xl font-fredoka font-bold text-lg px-12 py-4 hover:bg-primary hover:text-white hover:shadow-xl transition-all"
           >
             📊 VIEW BRACKET
