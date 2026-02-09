@@ -85,8 +85,8 @@ export default function VersusBracketPage({
       100) || 0;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-surface-variant via-background to-background">
-      <div className="max-w-6xl w-full">
+    <div className="min-h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-surface-variant via-background to-background">
+      <div className="w-full">
         {/* Header with Score */}
         <div className="text-center mb-8">
           <motion.h1
@@ -139,14 +139,14 @@ export default function VersusBracketPage({
         </div>
 
         {/* Matchup */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="flex flex-col gap-4 max-w-md mx-auto">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
             <div className="mb-2 text-center">
-              <span className="inline-block px-4 py-2 bg-primary/20 text-primary font-nunito font-semibold rounded-lg">
+              <span className="inline-block px-4 py-2 bg-primary/20 text-primary font-nunito font-semibold rounded-lg text-sm">
                 {versusBracketState.actor1Name}
               </span>
             </div>
@@ -156,19 +156,19 @@ export default function VersusBracketPage({
             />
           </motion.div>
 
-          <div className="flex items-center justify-center md:hidden">
-            <div className="text-4xl font-fredoka font-bold text-secondary">
+          <div className="flex items-center justify-center py-2">
+            <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-2 rounded-full text-2xl font-fredoka font-bold shadow-lg">
               VS
             </div>
           </div>
 
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
             <div className="mb-2 text-center">
-              <span className="inline-block px-4 py-2 bg-secondary/20 text-secondary font-nunito font-semibold rounded-lg">
+              <span className="inline-block px-4 py-2 bg-secondary/20 text-secondary font-nunito font-semibold rounded-lg text-sm">
                 {versusBracketState.actor2Name}
               </span>
             </div>
@@ -177,13 +177,6 @@ export default function VersusBracketPage({
               onClick={() => pickWinner(currentMatchup.movie2)}
             />
           </motion.div>
-        </div>
-
-        {/* VS Badge (desktop) */}
-        <div className="hidden md:flex justify-center -mt-64 mb-64">
-          <div className="bg-gradient-to-r from-primary to-secondary text-white w-20 h-20 rounded-full flex items-center justify-center text-2xl font-fredoka font-bold shadow-lg">
-            VS
-          </div>
         </div>
 
         {/* Instructions */}

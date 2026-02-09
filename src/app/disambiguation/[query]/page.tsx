@@ -59,8 +59,8 @@ function DisambiguationContent({ query }: { query: string }) {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-surface-variant via-background to-background">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen p-4 bg-gradient-to-br from-surface-variant via-background to-background">
+      <div className="w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-fredoka font-bold text-primary mb-2">

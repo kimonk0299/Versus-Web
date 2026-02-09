@@ -29,10 +29,10 @@ function VersusResultContent() {
   const loser = winner === actor1 ? actor2 : actor1;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-primary/20 via-background to-secondary/20 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-primary/20 via-background to-secondary/20 relative overflow-hidden">
       <ConfettiAnimation />
 
-      <div className="max-w-3xl w-full relative z-10">
+      <div className="w-full relative z-10">
         {/* Trophy Icon */}
         <motion.div
           className="text-center mb-8"

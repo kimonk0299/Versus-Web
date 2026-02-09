@@ -29,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${fredoka.variable} ${nunito.variable} antialiased font-nunito`}
       >
-        {children}
+        <div id="mobile-app-container">
+          {children}
+        </div>
       </body>
     </html>
   );

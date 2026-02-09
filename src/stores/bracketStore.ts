@@ -85,10 +85,10 @@ export const useBracketStore = create<BracketStoreState>((set, get) => ({
         getPersonDetails(actor2Id),
       ]);
 
-      // Fetch top 32 movies from each actor
+      // Fetch top 16 movies from each actor
       const [movies1, movies2] = await Promise.all([
-        getTopMovies(actor1Id, 32),
-        getTopMovies(actor2Id, 32),
+        getTopMovies(actor1Id, 16),
+        getTopMovies(actor2Id, 16),
       ]);
 
       if (movies1.length < 2 || movies2.length < 2) {

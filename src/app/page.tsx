@@ -50,8 +50,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-surface-variant via-background to-background">
-      <div className="max-w-2xl w-full">
+    <div className="min-h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-surface-variant via-background to-background">
+      <div className="w-full">
         {/* Title */}
         <div className="text-center mb-12">
           <h1 className="text-6xl font-fredoka font-bold text-primary mb-4">
