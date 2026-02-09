@@ -192,12 +192,7 @@ export default function BracketViewPage({
 function SingleActorBracket({ lobby, votes, host }: { lobby: Lobby; votes: Vote[]; host: Participant | null }) {
   const allMovies = (lobby.all_movies as MovieData[]) || [];
 
-  // Build rounds from matchup history
-  const rounds: MatchupResult[][] = [];
-  let currentRoundMatchups: MatchupResult[] = [];
-  let expectedMatchupsInRound = Math.floor(allMovies.length / 2);
-
-  // Group votes by matchup and determine winners
+  // Group votes by matchup
   const matchupVotes: Record<number, Vote[]> = {};
   votes.forEach(vote => {
     if (!matchupVotes[vote.matchup_index]) {
@@ -206,7 +201,9 @@ function SingleActorBracket({ lobby, votes, host }: { lobby: Lobby; votes: Vote[
     matchupVotes[vote.matchup_index].push(vote);
   });
 
-  // Process each matchup
+  // Build all matchup results first
+  const allMatchupResults: MatchupResult[] = [];
+
   Object.keys(matchupVotes).sort((a, b) => Number(a) - Number(b)).forEach(matchupIndexStr => {
     const matchupIndex = Number(matchupIndexStr);
     const matchupVotesList = matchupVotes[matchupIndex];
@@ -219,46 +216,49 @@ function SingleActorBracket({ lobby, votes, host }: { lobby: Lobby; votes: Vote[
 
     // Get the two movies in this matchup
     const movieIds = Object.keys(voteCounts).map(Number);
-    if (movieIds.length < 2) return;
+    if (movieIds.length >= 2) {
+      const movie1 = allMovies.find(m => m.id === movieIds[0]);
+      const movie2 = allMovies.find(m => m.id === movieIds[1]);
 
-    const movie1 = allMovies.find(m => m.id === movieIds[0]);
-    const movie2 = allMovies.find(m => m.id === movieIds[1]);
-    if (!movie1 || !movie2) return;
+      if (movie1 && movie2) {
+        const movie1Votes = voteCounts[movie1.id] || 0;
+        const movie2Votes = voteCounts[movie2.id] || 0;
 
-    const movie1Votes = voteCounts[movie1.id] || 0;
-    const movie2Votes = voteCounts[movie2.id] || 0;
+        let winnerId = movie1Votes > movie2Votes ? movie1.id :
+                       movie2Votes > movie1Votes ? movie2.id : null;
 
-    let winnerId = movie1Votes > movie2Votes ? movie1.id :
-                   movie2Votes > movie1Votes ? movie2.id : null;
+        // Tie-breaker
+        if (winnerId === null && host) {
+          const hostVote = matchupVotesList.find(v => v.participant_id === host.id);
+          if (hostVote) winnerId = hostVote.movie_id;
+        }
 
-    // Tie-breaker
-    if (winnerId === null && host) {
-      const hostVote = matchupVotesList.find(v => v.participant_id === host.id);
-      if (hostVote) winnerId = hostVote.movie_id;
-    }
+        const winner = winnerId ? allMovies.find(m => m.id === winnerId) : null;
 
-    const winner = winnerId ? allMovies.find(m => m.id === winnerId) : null;
-
-    currentRoundMatchups.push({
-      movie1,
-      movie2,
-      winner: winner || null,
-      movie1Votes,
-      movie2Votes,
-      matchupIndex,
-    });
-
-    // Check if round is complete
-    if (currentRoundMatchups.length === expectedMatchupsInRound) {
-      rounds.push([...currentRoundMatchups]);
-      currentRoundMatchups = [];
-      expectedMatchupsInRound = Math.floor(expectedMatchupsInRound / 2);
+        allMatchupResults.push({
+          movie1,
+          movie2,
+          winner: winner || null,
+          movie1Votes,
+          movie2Votes,
+          matchupIndex,
+        });
+      }
     }
   });
 
-  // Add any remaining matchups as final round
-  if (currentRoundMatchups.length > 0) {
-    rounds.push(currentRoundMatchups);
+  // Organize into rounds (8 matchups = Round 1, next 4 = Round 2, etc.)
+  const rounds: MatchupResult[][] = [];
+  let roundSize = Math.floor(allMovies.length / 2); // Start with 4 matchups for 8 movies
+  let currentIndex = 0;
+
+  while (currentIndex < allMatchupResults.length && roundSize > 0) {
+    const roundMatchups = allMatchupResults.slice(currentIndex, currentIndex + roundSize);
+    if (roundMatchups.length > 0) {
+      rounds.push(roundMatchups);
+      currentIndex += roundSize;
+    }
+    roundSize = Math.floor(roundSize / 2);
   }
 
   const getRoundName = (roundIndex: number, totalRounds: number) => {

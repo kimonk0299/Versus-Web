@@ -177,62 +177,77 @@ export default function MultiplayerResultsPage({
       <ConfettiAnimation />
 
       <div className="w-full relative z-10 max-w-md mx-auto">
-        {/* Trophy Icon */}
-        <motion.div
-          className="text-center mb-8"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 200,
-            damping: 15,
-            delay: 0.2,
-          }}
-        >
-          <div className="text-8xl mb-4">🏆</div>
-        </motion.div>
-
         {/* Winner Announcement */}
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.2 }}
         >
-          <h1 className="text-5xl font-fredoka font-bold mb-4">
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {isSingleActorMode && championMovie ? championMovie.title : !isSingleActorMode ? `${winner} WINS!` : 'CHAMPION!'}
-            </span>
+          <h1 className="text-6xl font-fredoka font-black mb-4 text-primary">
+            CHAMPION
           </h1>
-          <p className="text-2xl text-foreground/70 font-nunito">
-            {isSingleActorMode && championMovie
-              ? `${lobby.actor1_name}'s Ultimate Champion!`
-              : !isSingleActorMode
-              ? `${winner} dominated the battle!`
-              : `${lobby.actor1_name}'s movies battled it out!`
-            }
-          </p>
-          {isSingleActorMode && championMovie && championMovie.releaseYear && (
-            <p className="text-xl text-foreground/50 font-nunito mt-2">
-              {championMovie.releaseYear}
-            </p>
-          )}
         </motion.div>
 
-        {/* Champion Movie Poster (single actor mode) */}
-        {isSingleActorMode && championMovie && championMovie.posterPath && (
-          <motion.div
-            className="mb-8 flex justify-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, type: 'spring' }}
-          >
-            <img
-              src={`https://image.tmdb.org/t/p/w500${championMovie.posterPath}`}
-              alt={championMovie.title}
-              className="rounded-2xl shadow-2xl max-w-xs w-full"
-            />
-          </motion.div>
+        {/* Champion Content */}
+        {isSingleActorMode && championMovie ? (
+          <>
+            {/* Movie Poster */}
+            {championMovie.posterPath && (
+              <motion.div
+                className="mb-6 flex justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 100,
+                  damping: 15,
+                  delay: 0.4
+                }}
+              >
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${championMovie.posterPath}`}
+                  alt={championMovie.title}
+                  className="rounded-2xl shadow-2xl w-48"
+                  style={{ aspectRatio: '2/3' }}
+                />
+              </motion.div>
+            )}
+
+            {/* Movie Title and Subtitle */}
+            <motion.div
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <h2 className="text-3xl font-fredoka font-bold text-foreground mb-2">
+                {championMovie.title}
+              </h2>
+              <p className="text-lg text-foreground/70 font-nunito">
+                is the ultimate winner!
+              </p>
+            </motion.div>
+          </>
+        ) : !isSingleActorMode && (
+          <>
+            {/* Versus Mode Winner */}
+            <motion.div
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <h1 className="text-5xl font-fredoka font-bold mb-4">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  {winner}
+                </span>
+              </h1>
+              <p className="text-2xl text-foreground/70 font-nunito">
+                is the ultimate winner!
+              </p>
+            </motion.div>
+          </>
         )}
 
         {/* Score Display (only for versus mode) */}
