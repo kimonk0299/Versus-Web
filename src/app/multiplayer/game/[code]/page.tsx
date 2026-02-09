@@ -316,15 +316,23 @@ export default function MultiplayerGamePage({
     );
   }
 
-  // Calculate the matchup index within the current round
-  // current_matchup is a global counter, round_start_matchup tells us where this round began
-  const matchupIndexInRound = lobby.current_matchup - (lobby.round_start_matchup || 1);
+  // Calculate the matchup index
+  // For single actor knockout: use round_start_matchup to get position within current round
+  // For versus mode: use current_matchup directly (1-indexed)
+  let matchupIndexInRound: number;
+  if (isSingleActorMode) {
+    matchupIndexInRound = lobby.current_matchup - (lobby.round_start_matchup || 1);
+  } else {
+    matchupIndexInRound = lobby.current_matchup - 1;
+  }
+
   const currentMatchup = matchups[matchupIndexInRound];
 
   if (!currentMatchup) {
     console.error('No matchup found at index', matchupIndexInRound, 'in round', lobby.current_round);
     console.error('current_matchup:', lobby.current_matchup, 'round_start_matchup:', lobby.round_start_matchup);
     console.error('matchups array length:', matchups.length);
+    console.error('isSingleActorMode:', isSingleActorMode);
     return <LoadingSpinner />;
   }
 
