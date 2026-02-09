@@ -294,7 +294,7 @@ export default function LobbyWaitingRoom({
                   if (btn) {
                     btn.textContent = '✓';
                     setTimeout(() => {
-                      btn.textContent = '📋';
+                      btn.textContent = 'Copy';
                     }, 2000);
                   }
                 } catch (err) {
@@ -302,10 +302,10 @@ export default function LobbyWaitingRoom({
                 }
               }}
               id="copy-btn"
-              className="absolute -top-2 -right-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-transform active:scale-95"
+              className="absolute -top-2 -right-2 bg-white rounded-full shadow-lg px-3 py-1.5 text-xs font-nunito font-bold text-primary hover:scale-110 transition-transform active:scale-95"
               aria-label="Copy lobby code"
             >
-              📋
+              Copy
             </button>
           </div>
         </div>

@@ -235,65 +235,32 @@ export default function MultiplayerResultsPage({
           </motion.div>
         )}
 
-        {/* Score Breakdown (only for versus mode) */}
+        {/* Score Display (only for versus mode) */}
         {!isSingleActorMode && (
           <motion.div
-            className="bg-white rounded-2xl p-8 shadow-xl mb-8"
+            className="text-center mb-8"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <h2 className="text-2xl font-fredoka font-semibold text-center mb-6">
-              Final Score
-            </h2>
-
-          <div className="space-y-4">
-            {/* Winner Score */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-primary/10">
-              <div className="flex items-center gap-4">
-                <div className="text-3xl">👑</div>
-                <span className="text-xl font-nunito font-bold text-foreground">
-                  {winner}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-4xl font-fredoka font-bold text-primary">
-                  {winnerWins}
-                </span>
-                <span className="text-foreground/60 font-nunito">
-                  / {totalMatches}
-                </span>
+            {/* Score Badge */}
+            <div className="inline-block bg-gradient-to-r from-primary to-secondary text-white rounded-2xl px-8 py-6 shadow-2xl">
+              <p className="text-sm font-nunito mb-3 opacity-90">Final Score</p>
+              <div className="flex items-center gap-6">
+                <div className="text-center">
+                  <p className="text-5xl font-fredoka font-black">{winnerWins}</p>
+                  <p className="text-xs font-nunito mt-1 opacity-90">{winner}</p>
+                </div>
+                <div className="text-3xl font-fredoka opacity-60">-</div>
+                <div className="text-center">
+                  <p className="text-5xl font-fredoka font-black opacity-60">{loserWins}</p>
+                  <p className="text-xs font-nunito mt-1 opacity-60">
+                    {winner === lobby.actor1_name ? lobby.actor2_name : lobby.actor1_name}
+                  </p>
+                </div>
               </div>
             </div>
-
-            {/* Loser Score */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-foreground/5">
-              <span className="text-xl font-nunito font-bold text-foreground/70">
-                {winner === lobby.actor1_name ? lobby.actor2_name : lobby.actor1_name}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-4xl font-fredoka font-bold text-foreground/50">
-                  {loserWins}
-                </span>
-                <span className="text-foreground/60 font-nunito">
-                  / {totalMatches}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Win Percentage */}
-          <div className="mt-6 pt-6 border-t border-foreground/10">
-            <div className="text-center">
-              <p className="text-sm text-foreground/60 font-nunito mb-2">
-                Win Rate
-              </p>
-              <p className="text-3xl font-fredoka font-bold text-primary">
-                {((winnerWins / totalMatches) * 100).toFixed(0)}%
-              </p>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
         )}
 
         {/* Action Buttons */}
