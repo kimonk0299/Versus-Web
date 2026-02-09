@@ -50,41 +50,41 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-surface-variant via-background to-background">
-      <div className="w-full">
+    <div className="h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden">
+      <div className="w-full max-w-md mx-auto">
         {/* Title */}
-        <div className="text-center mb-12">
-          <h1 className="text-6xl font-fredoka font-bold text-primary mb-4">
+        <div className="text-center mb-6">
+          <h1 className="text-5xl font-fredoka font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
             VERSUS
           </h1>
-          <p className="text-xl text-foreground/70 font-nunito">
-            Who reigns supreme? Pick your champion!
+          <p className="text-sm text-foreground/70 font-nunito">
+            Pick your champion!
           </p>
         </div>
 
         {/* Mode Selection */}
-        <div className="bg-white rounded-2xl p-8 shadow-xl mb-8">
-          <h2 className="text-2xl font-fredoka font-semibold text-foreground mb-4">
+        <div className="bg-white rounded-2xl p-4 shadow-xl mb-4">
+          <h2 className="text-lg font-fredoka font-semibold text-foreground mb-3 text-center">
             Choose Mode
           </h2>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <button
               onClick={() => setMode('single')}
-              className={`py-4 px-6 rounded-xl font-nunito font-bold text-lg transition-all ${
+              className={`py-3 px-4 rounded-xl font-nunito font-bold text-sm transition-all ${
                 mode === 'single'
-                  ? 'bg-primary text-white shadow-lg scale-105'
-                  : 'bg-surface-variant text-foreground/70 hover:bg-surface-variant/80'
+                  ? 'bg-primary text-white shadow-lg'
+                  : 'bg-surface-variant text-foreground/70'
               }`}
             >
               Single Actor
             </button>
             <button
               onClick={() => setMode('versus')}
-              className={`py-4 px-6 rounded-xl font-nunito font-bold text-lg transition-all ${
+              className={`py-3 px-4 rounded-xl font-nunito font-bold text-sm transition-all ${
                 mode === 'versus'
-                  ? 'bg-secondary text-white shadow-lg scale-105'
-                  : 'bg-surface-variant text-foreground/70 hover:bg-surface-variant/80'
+                  ? 'bg-secondary text-white shadow-lg'
+                  : 'bg-surface-variant text-foreground/70'
               }`}
             >
               Actor vs Actor
@@ -92,7 +92,7 @@ export default function Home() {
           </div>
 
           {/* Actor 1 Search */}
-          <div className="relative mb-6">
+          <div className="relative mb-4">
             <ActorSearchField
               value={actor1Query}
               onChange={setActor1Query}
@@ -107,7 +107,7 @@ export default function Home() {
 
           {/* Actor 2 Search (Versus mode only) */}
           {mode === 'versus' && (
-            <div className="relative mb-6">
+            <div className="relative mb-4">
               <ActorSearchField
                 value={actor2Query}
                 onChange={setActor2Query}
@@ -125,10 +125,10 @@ export default function Home() {
           <button
             onClick={handleStartTournament}
             disabled={!canStartTournament()}
-            className={`w-full py-4 rounded-xl font-fredoka font-bold text-xl transition-all ${
+            className={`w-full py-3 rounded-xl font-fredoka font-bold text-lg transition-all ${
               canStartTournament()
-                ? 'bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg hover:scale-105'
-                : 'bg-foreground/20 text-foreground/40 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
+                : 'bg-foreground/10 text-foreground/40 cursor-not-allowed'
             }`}
           >
             START TOURNAMENT
@@ -136,11 +136,8 @@ export default function Home() {
         </div>
 
         {/* Instructions */}
-        <div className="text-center text-foreground/60 text-sm">
-          <p>Start typing to see suggestions from our preset actor database.</p>
-          <p className="mt-2">
-            Don&apos;t see your actor? We&apos;ll search TMDb for you!
-          </p>
+        <div className="text-center text-foreground/60 text-xs px-4">
+          <p>Start typing to see actor suggestions</p>
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@ export default function ActorSearchField({
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-nunito font-semibold text-foreground/80 mb-2">
+      <label className="block text-xs font-nunito font-semibold text-foreground/70 mb-1">
         {label}
       </label>
       <div className="relative">
@@ -30,10 +30,10 @@ export default function ActorSearchField({
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
-          className="w-full px-4 py-3 bg-white border-2 border-card-border rounded-xl focus:border-primary focus:outline-none transition-colors font-nunito text-lg"
+          className="w-full px-3 py-2.5 bg-surface-variant border-2 border-surface-variant rounded-xl focus:border-primary focus:bg-white focus:outline-none transition-all font-nunito text-base text-foreground placeholder:text-foreground/40"
         />
         <svg
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/40"
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/30"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
