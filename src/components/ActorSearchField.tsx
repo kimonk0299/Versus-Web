@@ -5,30 +5,24 @@ import { ChangeEvent } from 'react';
 interface ActorSearchFieldProps {
   value: string;
   onChange: (value: string) => void;
-  placeholder?: string;
-  label: string;
+  placeholder: string;
 }
 
 export default function ActorSearchField({
   value,
   onChange,
-  placeholder = 'Type actor name...',
-  label,
+  placeholder,
 }: ActorSearchFieldProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
   };
 
   return (
-    <div className="w-full">
-      {label && (
-        <label className="block text-xs font-nunito font-semibold text-foreground/70 mb-1">
-          {label}
-        </label>
-      )}
-      <div className="relative">
+    <div className="relative w-full">
+      {/* Search Icon - Leading Icon */}
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
         <svg
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/40"
+          className="w-5 h-5 text-foreground/40"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -40,14 +34,16 @@ export default function ActorSearchField({
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
-        <input
-          type="text"
-          value={value}
-          onChange={handleChange}
-          placeholder={placeholder}
-          className="w-full pl-12 pr-4 py-4 bg-white border-2 border-foreground/20 rounded-2xl focus:border-primary focus:outline-none transition-all font-nunito text-base text-foreground placeholder:text-foreground/40"
-        />
       </div>
+
+      {/* Input Field */}
+      <input
+        type="text"
+        value={value}
+        onChange={handleChange}
+        placeholder={placeholder}
+        className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-foreground/20 rounded-xl focus:border-primary focus:outline-none transition-colors font-nunito text-base text-foreground placeholder:text-foreground/40"
+      />
     </div>
   );
 }

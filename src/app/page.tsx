@@ -26,16 +26,12 @@ export default function Home() {
 
   const handleStartTournament = () => {
     if (mode === 'single') {
-      // Check if we need disambiguation
       if (needsDisambiguation(1)) {
-        // Navigate to disambiguation screen
         router.push(`/disambiguation/${encodeURIComponent(actor1Query)}`);
       } else if (actor1Id) {
-        // Direct to bracket
         router.push(`/bracket/${actor1Id}`);
       }
     } else {
-      // Versus mode
       const needsDisamb1 = needsDisambiguation(1);
       const needsDisamb2 = needsDisambiguation(2);
 
@@ -50,117 +46,134 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col p-6 bg-background overflow-y-auto">
-      <div className="w-full max-w-md mx-auto my-auto">
-        {/* Film Icon */}
-        <div className="text-center mb-4">
-          <div className="inline-block text-6xl">🎬</div>
-        </div>
+    <div className="min-h-screen bg-background p-6">
+      <div className="flex flex-col">
+        {/* Top spacing - 48dp */}
+        <div className="h-12" />
 
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-6xl font-fredoka font-bold text-primary mb-2">
+        {/* App Title */}
+        <div className="flex flex-col items-center">
+          <div className="text-5xl mb-2">🎬</div>
+          <h1 className="text-6xl font-fredoka font-black text-primary mb-2">
             VERSUS
           </h1>
-          <p className="text-base text-foreground/60 font-nunito">
+          <p className="text-base text-foreground/70 font-nunito">
             Movie Tournament
           </p>
         </div>
 
-        {/* Mode Selection */}
-        <div className="mb-8">
-          <h2 className="text-xl font-fredoka font-semibold text-foreground mb-4 text-center">
-            Choose Mode
-          </h2>
+        {/* 32dp spacing */}
+        <div className="h-8" />
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <button
-              onClick={() => setMode('single')}
-              className={`py-4 px-4 rounded-2xl font-nunito font-semibold text-base transition-all border-2 flex items-center justify-center gap-2 ${
-                mode === 'single'
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-foreground/70 border-foreground/20'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
-              Single Actor
-            </button>
-            <button
-              onClick={() => setMode('versus')}
-              className={`py-4 px-4 rounded-2xl font-nunito font-semibold text-base transition-all border-2 flex items-center justify-center gap-2 ${
-                mode === 'versus'
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-foreground/70 border-foreground/20'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-              </svg>
-              Actor vs Actor
-            </button>
-          </div>
+        {/* Mode Selector */}
+        <h2 className="text-xl font-nunito font-medium text-foreground text-center">
+          Choose Mode
+        </h2>
 
-          {/* Actor 1 Search */}
-          <div className="relative mb-6">
-            <ActorSearchField
-              value={actor1Query}
-              onChange={setActor1Query}
-              label=""
-              placeholder={mode === 'single' ? 'Actor Name' : 'Actor 1'}
-            />
+        {/* 8dp spacing */}
+        <div className="h-2" />
+
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={() => setMode('single')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+              mode === 'single'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-foreground/70 border-foreground/20'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            Single Actor
+          </button>
+          <button
+            onClick={() => setMode('versus')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+              mode === 'versus'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-foreground/70 border-foreground/20'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+            </svg>
+            Actor vs Actor
+          </button>
+        </div>
+
+        {/* 24dp spacing */}
+        <div className="h-6" />
+
+        {/* Actor 1 Input */}
+        <div className="relative">
+          <ActorSearchField
+            value={actor1Query}
+            onChange={setActor1Query}
+            placeholder={mode === 'single' ? 'Actor Name' : 'Actor 1'}
+          />
+          {actor1Suggestions.length > 0 && !actor1Id && (
             <SuggestionsList
               suggestions={actor1Suggestions}
               onSelect={selectActor1}
             />
-          </div>
-
-          {/* VS Text (Versus mode only) */}
-          {mode === 'versus' && (
-            <div className="text-center my-4">
-              <span className="text-3xl font-fredoka font-bold text-primary">VS</span>
-            </div>
           )}
+        </div>
 
-          {/* Actor 2 Search (Versus mode only) */}
-          {mode === 'versus' && (
-            <div className="relative mb-6">
+        {/* Versus mode: VS text and Actor 2 */}
+        {mode === 'versus' && (
+          <>
+            {/* 12dp spacing */}
+            <div className="h-3" />
+
+            <div className="text-center py-1">
+              <span className="text-3xl font-fredoka font-black text-primary">VS</span>
+            </div>
+
+            {/* 4dp spacing */}
+            <div className="h-1" />
+
+            <div className="relative">
               <ActorSearchField
                 value={actor2Query}
                 onChange={setActor2Query}
-                label=""
                 placeholder="Actor 2"
               />
-              <SuggestionsList
-                suggestions={actor2Suggestions}
-                onSelect={selectActor2}
-              />
+              {actor2Suggestions.length > 0 && !actor2Id && (
+                <SuggestionsList
+                  suggestions={actor2Suggestions}
+                  onSelect={selectActor2}
+                />
+              )}
             </div>
-          )}
+          </>
+        )}
 
-          {/* Start Button */}
-          <button
-            onClick={handleStartTournament}
-            disabled={!canStartTournament()}
-            className={`w-full py-4 rounded-2xl font-fredoka font-bold text-lg transition-all ${
-              canStartTournament()
-                ? 'bg-foreground/10 text-foreground/50 hover:bg-foreground/15'
-                : 'bg-foreground/5 text-foreground/30 cursor-not-allowed'
-            }`}
-          >
-            START TOURNAMENT
-          </button>
-        </div>
+        {/* 32dp spacing */}
+        <div className="h-8" />
 
-        {/* Instructions */}
-        <div className="text-center text-foreground/50 text-sm px-4">
-          <p>
-            {mode === 'single'
-              ? 'Pick an actor and their top 16 movies battle it out in a tournament bracket!'
-              : 'Pick two actors and their top movies go head to head — the actor with more wins takes it!'}
-          </p>
-        </div>
+        {/* Start Button - 56dp height */}
+        <button
+          onClick={handleStartTournament}
+          disabled={!canStartTournament()}
+          className={`w-full h-14 rounded-2xl font-fredoka font-bold text-base transition-all ${
+            canStartTournament()
+              ? 'bg-primary text-white'
+              : 'bg-foreground/10 text-foreground/30 cursor-not-allowed'
+          }`}
+        >
+          START TOURNAMENT
+        </button>
+
+        {/* 16dp spacing */}
+        <div className="h-4" />
+
+        {/* Hint text */}
+        <p className="text-sm text-foreground/50 text-center font-nunito leading-relaxed">
+          {mode === 'single'
+            ? 'Pick an actor and their top 16 movies\nbattle it out in a tournament bracket!'
+            : 'Pick two actors and their top movies\ngo head to head — the actor with more wins takes it!'}
+        </p>
       </div>
     </div>
   );
