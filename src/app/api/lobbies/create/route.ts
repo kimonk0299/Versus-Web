@@ -6,6 +6,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { actor1_id, actor2_id, actor1_name, actor2_name, movie_count, host_name } = body;
 
+    // Clean up old lobbies (older than 24 hours)
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    await supabase
+      .from('lobbies')
+      .delete()
+      .lt('created_at', oneDayAgo);
+
     // Generate unique 3-letter code
     let code: string;
     let attempts = 0;

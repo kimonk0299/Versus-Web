@@ -257,6 +257,18 @@ export default function Home() {
             ? `Pick an actor and their top ${movieCount} movies\nbattle it out in a tournament bracket!`
             : `Pick two actors and their top ${movieCount} movies each\ngo head to head — the actor with more wins takes it!`}
         </p>
+
+        {/* 8dp spacing */}
+        <div className="h-2" />
+
+        {/* Quick Join */}
+        <button
+          onClick={() => router.push('/multiplayer/join')}
+          style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+          className="w-full bg-white text-foreground/70 border-2 border-foreground/20 rounded-xl font-nunito font-medium transition-all hover:border-primary"
+        >
+          Join Lobby with Code
+        </button>
       </div>
     </div>
   );

@@ -107,14 +107,28 @@ export default function LobbyWaitingRoom({
     if (!lobby) return;
 
     try {
-      await supabase
+      console.log('Starting game for lobby:', lobby.id);
+
+      const { data, error: updateError } = await supabase
         .from('lobbies')
         .update({ current_matchup: 1 })
-        .eq('id', lobby.id);
+        .eq('id', lobby.id)
+        .select();
 
-      // Navigation will happen via subscription
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
+
+      console.log('Update successful:', data);
+
+      // Also manually navigate after a short delay if subscription doesn't work
+      setTimeout(() => {
+        router.push(`/multiplayer/game/${code}?participant=${participantId}`);
+      }, 1000);
     } catch (err: any) {
-      setError(err.message);
+      console.error('Start game error:', err);
+      setError(err.message || 'Failed to start game');
     }
   };
 
