@@ -207,14 +207,26 @@ export async function POST(
           }
         }
       } else {
-        // Versus mode or fallback - just advance matchup
-        const nextMatchup = lobby.current_matchup + 1;
-        console.log('All players voted! Advancing from matchup', lobby.current_matchup, 'to', nextMatchup);
+        // Versus mode - check if this was the last matchup
+        const totalMatchups = lobby.movie_count; // Each actor has N movies, so N matchups total
 
-        await supabase
-          .from('lobbies')
-          .update({ current_matchup: nextMatchup })
-          .eq('id', lobby.id);
+        if (lobby.current_matchup >= totalMatchups) {
+          // Last matchup complete - end the game
+          console.log('All matchups complete! Ending game.');
+          await supabase
+            .from('lobbies')
+            .update({ is_active: false })
+            .eq('id', lobby.id);
+        } else {
+          // More matchups remaining - advance
+          const nextMatchup = lobby.current_matchup + 1;
+          console.log('All players voted! Advancing from matchup', lobby.current_matchup, 'to', nextMatchup);
+
+          await supabase
+            .from('lobbies')
+            .update({ current_matchup: nextMatchup })
+            .eq('id', lobby.id);
+        }
       }
     }
 
