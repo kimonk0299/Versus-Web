@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { useBracketStore } from '@/stores/bracketStore';
 import ConfettiAnimation from '@/components/ConfettiAnimation';
-import MovieCard from '@/components/MovieCard';
 import { motion } from 'framer-motion';
 
 export default function WinnerPage({
@@ -22,7 +21,6 @@ export default function WinnerPage({
   };
 
   if (!bracketState?.champion) {
-    // If there's no champion, redirect to home
     router.push('/');
     return null;
   }
@@ -31,76 +29,79 @@ export default function WinnerPage({
     <div className="min-h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-primary/20 via-background to-secondary/20 relative overflow-hidden">
       <ConfettiAnimation />
 
-      <div className="w-full relative z-10">
-        {/* Trophy/Crown Icon */}
+      <div className="w-full relative z-10 max-w-md mx-auto">
+        {/* Winner Announcement */}
         <motion.div
           className="text-center mb-8"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 200,
-            damping: 15,
-            delay: 0.2,
-          }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
-          <div className="text-8xl mb-4">👑</div>
+          <h1 className="text-6xl font-fredoka font-black mb-4 text-primary">
+            CHAMPION
+          </h1>
         </motion.div>
 
-        {/* Winner Title */}
-        <motion.h1
-          className="text-6xl font-fredoka font-bold text-center mb-8"
+        {/* Movie Poster */}
+        {bracketState.champion.posterPath && (
+          <motion.div
+            className="mb-6 flex justify-center"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              type: 'spring',
+              stiffness: 100,
+              damping: 15,
+              delay: 0.4
+            }}
+          >
+            <img
+              src={`https://image.tmdb.org/t/p/w500${bracketState.champion.posterPath}`}
+              alt={bracketState.champion.title}
+              className="rounded-2xl shadow-2xl w-48"
+              style={{ aspectRatio: '2/3' }}
+            />
+          </motion.div>
+        )}
+
+        {/* Movie Title and Subtitle */}
+        <motion.div
+          className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            CHAMPION!
-          </span>
-        </motion.h1>
-
-        {/* Winner Movie Card */}
-        <motion.div
-          className="max-w-sm mx-auto mb-8"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            type: 'spring',
-            stiffness: 150,
-            damping: 12,
-            delay: 0.6,
-          }}
-        >
-          <MovieCard movie={bracketState.champion} />
-        </motion.div>
-
-        {/* Movie Title */}
-        <motion.div
-          className="text-center mb-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.6 }}
         >
           <h2 className="text-3xl font-fredoka font-bold text-foreground mb-2">
             {bracketState.champion.title}
           </h2>
-          {bracketState.champion.releaseYear > 0 && (
-            <p className="text-xl text-foreground/70">
-              {bracketState.champion.releaseYear}
-            </p>
-          )}
+          <p className="text-lg text-foreground/70 font-nunito">
+            is the ultimate winner!
+          </p>
         </motion.div>
 
-        {/* Play Again Button */}
+        {/* Action Buttons */}
         <motion.div
-          className="text-center"
+          className="text-center space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 0.8 }}
         >
+          {/* View Bracket Button */}
+          <button
+            onClick={() => {
+              // Navigate to bracket view (we'll need to pass actor ID)
+              // For now, just show an alert
+              alert('Bracket view coming soon for single player!');
+            }}
+            className="w-full max-w-md bg-white text-primary border-2 border-primary rounded-xl font-fredoka font-bold text-lg px-12 py-4 hover:bg-primary hover:text-white hover:shadow-xl transition-all"
+          >
+            📊 VIEW BRACKET
+          </button>
+
+          {/* Play Again Button */}
           <button
             onClick={handlePlayAgain}
-            className="px-12 py-6 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-fredoka font-bold text-xl hover:shadow-2xl hover:scale-105 transition-all"
+            className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-fredoka font-bold text-xl px-12 py-4 hover:shadow-2xl hover:scale-105 transition-all"
           >
             PLAY AGAIN
           </button>

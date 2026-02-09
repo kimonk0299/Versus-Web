@@ -23,7 +23,6 @@ function VersusResultContent() {
     router.push('/');
   };
 
-  const totalMatches = wins1 + wins2;
   const winnerWins = winner === actor1 ? wins1 : wins2;
   const loserWins = winner === actor1 ? wins2 : wins1;
   const loser = winner === actor1 ? actor2 : actor1;
@@ -32,112 +31,80 @@ function VersusResultContent() {
     <div className="min-h-screen flex flex-col justify-center p-4 bg-gradient-to-br from-primary/20 via-background to-secondary/20 relative overflow-hidden">
       <ConfettiAnimation />
 
-      <div className="w-full relative z-10">
-        {/* Trophy Icon */}
-        <motion.div
-          className="text-center mb-8"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 200,
-            damping: 15,
-            delay: 0.2,
-          }}
-        >
-          <div className="text-8xl mb-4">🏆</div>
-        </motion.div>
-
+      <div className="w-full relative z-10 max-w-md mx-auto">
         {/* Winner Announcement */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h1 className="text-6xl font-fredoka font-black mb-4 text-primary">
+            CHAMPION
+          </h1>
+        </motion.div>
+
+        {/* Winner Name and Subtitle */}
+        <motion.div
+          className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           <h1 className="text-5xl font-fredoka font-bold mb-4">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              {winner} WINS!
+              {winner}
             </span>
           </h1>
-          <p className="text-2xl text-foreground/70 font-nunito">
-            {winner} dominated the battle!
+          <p className="text-lg text-foreground/70 font-nunito">
+            is the ultimate winner!
           </p>
         </motion.div>
 
-        {/* Score Breakdown */}
+        {/* Score Display */}
         <motion.div
-          className="bg-white rounded-2xl p-8 shadow-xl mb-8"
+          className="text-center mb-8"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <h2 className="text-2xl font-fredoka font-semibold text-center mb-6">
-            Final Score
-          </h2>
-
-          <div className="space-y-4">
-            {/* Winner Score */}
-            <div
-              className={`flex items-center justify-between p-4 rounded-xl ${
-                winner === actor1 ? 'bg-primary/10' : 'bg-secondary/10'
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="text-3xl">👑</div>
-                <span className="text-xl font-nunito font-bold text-foreground">
-                  {winner}
-                </span>
+          <div className="inline-block bg-gradient-to-r from-primary to-secondary text-white rounded-2xl px-8 py-6 shadow-2xl">
+            <p className="text-sm font-nunito mb-3 opacity-90">Final Score</p>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <p className="text-5xl font-fredoka font-black">{winnerWins}</p>
+                <p className="text-xs font-nunito mt-1 opacity-90">{winner}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-4xl font-fredoka font-bold text-primary">
-                  {winnerWins}
-                </span>
-                <span className="text-foreground/60 font-nunito">
-                  / {totalMatches}
-                </span>
+              <div className="text-3xl font-fredoka opacity-60">-</div>
+              <div className="text-center">
+                <p className="text-5xl font-fredoka font-black opacity-60">{loserWins}</p>
+                <p className="text-xs font-nunito mt-1 opacity-60">{loser}</p>
               </div>
-            </div>
-
-            {/* Loser Score */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-foreground/5">
-              <span className="text-xl font-nunito font-bold text-foreground/70">
-                {loser}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-4xl font-fredoka font-bold text-foreground/50">
-                  {loserWins}
-                </span>
-                <span className="text-foreground/60 font-nunito">
-                  / {totalMatches}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Win Percentage */}
-          <div className="mt-6 pt-6 border-t border-foreground/10">
-            <div className="text-center">
-              <p className="text-sm text-foreground/60 font-nunito mb-2">
-                Win Rate
-              </p>
-              <p className="text-3xl font-fredoka font-bold text-primary">
-                {((winnerWins / totalMatches) * 100).toFixed(0)}%
-              </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Play Again Button */}
+        {/* Action Buttons */}
         <motion.div
-          className="text-center"
+          className="text-center space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
+          {/* View Bracket Button */}
+          <button
+            onClick={() => {
+              alert('Bracket view coming soon for single player!');
+            }}
+            className="w-full max-w-md bg-white text-primary border-2 border-primary rounded-xl font-fredoka font-bold text-lg px-12 py-4 hover:bg-primary hover:text-white hover:shadow-xl transition-all"
+          >
+            📊 VIEW BRACKET
+          </button>
+
+          {/* Play Again Button */}
           <button
             onClick={handlePlayAgain}
-            className="px-12 py-6 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-fredoka font-bold text-xl hover:shadow-2xl hover:scale-105 transition-all"
+            className="bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-fredoka font-bold text-xl px-12 py-4 hover:shadow-2xl hover:scale-105 transition-all"
           >
             PLAY AGAIN
           </button>
