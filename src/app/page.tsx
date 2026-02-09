@@ -78,7 +78,7 @@ export default function Home() {
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => setMode('single')}
-            className={`flex items-center gap-3 px-10 py-5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`flex items-center gap-3 px-16 py-8 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               mode === 'single'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
@@ -91,7 +91,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setMode('versus')}
-            className={`flex items-center gap-3 px-10 py-5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`flex items-center gap-3 px-16 py-8 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               mode === 'versus'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
@@ -118,7 +118,7 @@ export default function Home() {
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => setMovieCount(8)}
-            className={`px-10 py-5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`px-16 py-8 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               movieCount === 8
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
@@ -128,7 +128,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setMovieCount(16)}
-            className={`px-10 py-5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`px-16 py-8 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               movieCount === 16
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
@@ -138,7 +138,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setMovieCount(32)}
-            className={`px-10 py-5 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
+            className={`px-16 py-8 rounded-full border-2 font-nunito font-semibold text-sm transition-all ${
               movieCount === 32
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-foreground/70 border-foreground/20'
@@ -202,7 +202,7 @@ export default function Home() {
         <button
           onClick={handleStartTournament}
           disabled={!canStartTournament()}
-          className={`w-full px-10 py-6 rounded-2xl font-fredoka font-bold text-base transition-all ${
+          className={`w-full px-16 py-8 rounded-2xl font-fredoka font-bold text-base transition-all ${
             canStartTournament()
               ? 'bg-primary text-white'
               : 'bg-foreground/10 text-foreground/30 cursor-not-allowed'
